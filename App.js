@@ -1,20 +1,53 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import MenuScreen from './screens/Menu'
+import LoginScreen from './screens/Login';
+import Restaurant from './screens/Restaurant';
+import Signup from './screens/Signup';
 
-export default function App() {
+    
+//firebase
+import app from './config/firebase';
+import { getFirestore, collection, doc, setDoc, getDoc } from 'firebase/firestore';
+const db = getFirestore(app);
+
+//navigator
+const Stack = createStackNavigator();
+
+
+const App = () => {
+
+  const [dados, setDados] = useState()
+
+
+  const getData = async () => {
+    const docRef = doc(db, "teste", "wi0GxY4LaAWGw6vg2K25");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+    } else {
+      // docSnap.data() will be undefined in this case
+      console.log("No such document!");
+    }
+  }
+
+  useEffect(() => {
+    getData()    
+  });
+
+ 
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Menu" component={MenuScreen} />
+        <Stack.Screen name="Restaurant" component={Restaurant} />
+        <Stack.Screen name="Signup" component={Signup} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  ); 
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
