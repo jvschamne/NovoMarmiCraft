@@ -21,9 +21,6 @@ const Stack = createStackNavigator();
 
 const App = () => {
 
-  const [dados, setDados] = useState()
-
-
   const getData = async () => {
     const docRef = doc(db, "clientes", "teste");
     const docSnap = await getDoc(docRef);
