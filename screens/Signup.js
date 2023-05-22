@@ -7,36 +7,25 @@ import app from '../config/firebase';
 
 export default function Signup() {
   
+  const navigation = useNavigation();
   const [etapa, setEtapa] = useState(1)
 
   return (
     <View style={styles.container}>
-    
-      {etapa === 1 &&
         <>
           <Text style={styles.title}>Como deseja se cadastrar?</Text>
 
-          <TouchableOpacity style={styles.button} onPress={() => setEtapa(2)}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("RegisterClient")}>
             <Text style={styles.buttonText}>CLIENTE</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => setEtapa(2)}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("RegisterRestaurant")}>
             <Text style={styles.buttonText}>RESTAURANTE</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => setEtapa(2)}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("RegisterDelivery")}>
             <Text style={styles.buttonText}>ENTREGADOR</Text>
           </TouchableOpacity>
         </>
-      }
-      {
-        etapa === 2 &&
-        <Text style={styles.title}>Cadastrado!</Text>
-      }
 
-
-
-
-
-     
       <StatusBar style="auto" />
     </View>
   );

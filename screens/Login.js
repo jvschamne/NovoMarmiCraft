@@ -3,18 +3,46 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword  } from "firebase/auth";
+import { getFirestore, collection, doc, setDoc, getDoc } from 'firebase/firestore';
 import app from '../config/firebase';
 
 export default function App() {
-
+  const db = getFirestore(app);
   const navigation = useNavigation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
-  
+  const [loggedType, setLoggedType] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({});
+
+  const getData = async (id) => {
+    const docRefClients = doc(db, "clientes", id);
+    const docRefRestaurants = doc(db, "restaurantes", id);
+    const docRefDelivery = doc(db, "entregadores", id);
+
+    const docSnapClients = await getDoc(docRefClients);
+    const docSnapRestaurants = await getDoc(docRefRestaurants);
+    const docSnapDelivery = await getDoc(docRefDelivery);
+
+    if (docSnapClients.exists()) {
+      console.log("CLIENTS - Document data:", docSnapClients.data());
+      setLoggedType("client");
+    } 
+    else if (docSnapRestaurants.exists()) {
+      console.log("RESTAURANTS - Document data:", docSnapRestaurants.data());
+      setLoggedType("restaurant");
+    }
+    else if (docSnapDelivery.exists()) {
+      console.log("DELIVERY - Document data:", docSnapDelivery.data());
+      setLoggedType("delivery");
+    }
+    else {
+      // docSnap.data() will be undefined in this case
+      console.log("No such document!");
+    }
+  }
 
   const handleSignup = () => {
     navigation.navigate('Signup');
@@ -32,7 +60,9 @@ export default function App() {
         const userInfo = userCredential.user
         console.log(userInfo)
         setUser(userInfo)
-        console.log("User:", user)
+        
+        console.log("UID: "+userInfo.uid);
+        getData(userInfo.uid);
 
         //navega para dentro do app
         setLoggedIn(true)
@@ -78,6 +108,7 @@ export default function App() {
       <TouchableOpacity style={styles.button2} onPress={handleSignup}>
         <Text style={styles.buttonText2}>Não tenho Cadastro</Text>
       </TouchableOpacity>
+
       <TouchableOpacity style={styles.button2} onPress={handleSignup}>
         <Text style={styles.buttonText2}>Esqueci a senha</Text>
       </TouchableOpacity>

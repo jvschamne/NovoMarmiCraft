@@ -5,6 +5,9 @@ import MenuScreen from './screens/Menu'
 import LoginScreen from './screens/Login';
 import Restaurant from './screens/Restaurant';
 import Signup from './screens/Signup';
+import RegisterClient from './screens/RegisterClient';
+import RegisterRestaurant from './screens/RegisterRestaurant';
+import RegisterDelivery from './screens/RegisterDelivery';
 
     
 //firebase
@@ -22,7 +25,7 @@ const App = () => {
 
 
   const getData = async () => {
-    const docRef = doc(db, "teste", "wi0GxY4LaAWGw6vg2K25");
+    const docRef = doc(db, "clientes", "teste");
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -40,11 +43,14 @@ const App = () => {
  
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Menu" component={MenuScreen} />
         <Stack.Screen name="Restaurant" component={Restaurant} />
         <Stack.Screen name="Signup" component={Signup} />
+        <Stack.Screen name="RegisterClient" component={RegisterClient} />
+        <Stack.Screen name="RegisterRestaurant" component={RegisterRestaurant} />
+        <Stack.Screen name="RegisterDelivery" component={RegisterDelivery} />
       </Stack.Navigator>
     </NavigationContainer>
   ); 
