@@ -6,9 +6,6 @@ import LoginScreen from './screens/Login';
 import Restaurant from './screens/Restaurant';
 import Signup from './screens/Signup';
 import Register from './screens/Register';
-import RegisterClient from './screens/RegisterClient';
-import RegisterRestaurant from './screens/RegisterRestaurant';
-import RegisterDelivery from './screens/RegisterDelivery';
 
     
 //firebase
