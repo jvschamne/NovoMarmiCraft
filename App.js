@@ -5,6 +5,7 @@ import MenuScreen from './screens/Menu'
 import LoginScreen from './screens/Login';
 import Restaurant from './screens/Restaurant';
 import Signup from './screens/Signup';
+import Register from './screens/Register';
 import RegisterClient from './screens/RegisterClient';
 import RegisterRestaurant from './screens/RegisterRestaurant';
 import RegisterDelivery from './screens/RegisterDelivery';
@@ -45,9 +46,7 @@ const App = () => {
         <Stack.Screen name="Menu" component={MenuScreen} />
         <Stack.Screen name="Restaurant" component={Restaurant} />
         <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="RegisterClient" component={RegisterClient} />
-        <Stack.Screen name="RegisterRestaurant" component={RegisterRestaurant} />
-        <Stack.Screen name="RegisterDelivery" component={RegisterDelivery} />
+        <Stack.Screen name="Register" component={Register} />
       </Stack.Navigator>
     </NavigationContainer>
   ); 

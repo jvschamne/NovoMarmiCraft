@@ -15,13 +15,13 @@ export default function Signup() {
         <>
           <Text style={styles.title}>Como deseja se cadastrar?</Text>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("RegisterClient")}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Register", {type : 'clientes'})}>
             <Text style={styles.buttonText}>CLIENTE</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("RegisterRestaurant")}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Register", {type : 'restaurantes'})}>
             <Text style={styles.buttonText}>RESTAURANTE</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("RegisterDelivery")}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Register", {type : 'entregadores'})}>
             <Text style={styles.buttonText}>ENTREGADOR</Text>
           </TouchableOpacity>
         </>
