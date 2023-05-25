@@ -7,7 +7,6 @@ import { getFirestore, collection, doc, setDoc, getDoc } from 'firebase/firestor
 import app from '../config/firebase';
 
 export default function App() {
-  const db = getFirestore(app);
   const navigation = useNavigation();
 
   const [email, setEmail] = useState('');
@@ -17,32 +16,6 @@ export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({});
 
-  const getData = async (id) => {
-    const docRefClients = doc(db, "clientes", id);
-    const docRefRestaurants = doc(db, "restaurantes", id);
-    const docRefDelivery = doc(db, "entregadores", id);
-
-    const docSnapClients = await getDoc(docRefClients);
-    const docSnapRestaurants = await getDoc(docRefRestaurants);
-    const docSnapDelivery = await getDoc(docRefDelivery);
-
-    if (docSnapClients.exists()) {
-      console.log("CLIENTS - Document data:", docSnapClients.data());
-      setLoggedType("client");
-    } 
-    else if (docSnapRestaurants.exists()) {
-      console.log("RESTAURANTS - Document data:", docSnapRestaurants.data());
-      setLoggedType("restaurant");
-    }
-    else if (docSnapDelivery.exists()) {
-      console.log("DELIVERY - Document data:", docSnapDelivery.data());
-      setLoggedType("delivery");
-    }
-    else {
-      // docSnap.data() will be undefined in this case
-      console.log("No such document!");
-    }
-  }
 
   const handleSignup = () => {
     navigation.navigate('Signup');
@@ -57,16 +30,14 @@ export default function App() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        const userInfo = userCredential.user
-        console.log(userInfo)
-        setUser(userInfo)
+        const userInfo = userCredential.user;
+        setUser(userInfo);
         
         console.log("UID: "+userInfo.uid);
-        getData(userInfo.uid);
 
         //navega para dentro do app
         setLoggedIn(true)
-        navigation.navigate('Menu');
+        navigation.navigate('Menu', {uId : userInfo.uid});
       })
       .catch((error) => {
         const errorCode = error.code;

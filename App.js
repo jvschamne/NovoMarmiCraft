@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import MenuScreen from './screens/Menu'
+import Menu from './screens/Menu'
 import LoginScreen from './screens/Login';
 import Restaurant from './screens/Restaurant';
 import Signup from './screens/Signup';
@@ -40,7 +40,7 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Menu" component={MenuScreen} />
+        <Stack.Screen name="Menu" component={Menu} />
         <Stack.Screen name="Restaurant" component={Restaurant} />
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Register" component={Register} />
