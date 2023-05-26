@@ -9,12 +9,10 @@ import app from '../config/firebase';
 export default function Menu(props) {
   const db = getFirestore(app);
   const navigation = useNavigation();
-  const restaurantes = useState(["res1", "res2", "res3"])
   const uId = props.route.params.uId;
-  console.log("LOGGED USER uID: "+uId);
 
   const [userType, setUserType] = useState("");
-  const [restaurantData, setRestaurantData] = useState()
+  const [restaurantData, setRestaurantData] = useState([]);
 
   const getUserType = async () => {
     let type = "";
@@ -54,7 +52,6 @@ export default function Menu(props) {
   };
 
 
-
   const getRestaurantData = async () => {
     const q = query(collection(db, "restaurantes"));
     const querySnapshot = await getDocs(q);
@@ -72,53 +69,64 @@ export default function Menu(props) {
 
   }
 
-  
-
-
   useEffect(() => {
-    getUserType();    
+    getUserType();     
   }, []);
 
-  useEffect(() => {
-    getRestaurantData();    
-  }, []);
 
-  console.log("MENU TYPE: "+userType);
+
+
+
+  console.log("RESTAURANTS DATA: ", restaurantData);
+  console.log("lenght: ", (restaurantData.length!==0));
+  //console.log(restaurantData[0]["nome"]);
 
 
   //???
   navigation.addListener('beforeRemove', (e) => e.preventDefault());
+  console.log("userType: ", userType);
 
-  return(
-    <View style={styles.container}>
-      <Text style={{fontSize: 30, marginBottom: 50}}>Restaurantes</Text>
-      {(restaurantData.length !== 0) &&
-        <RestaurantCard></RestaurantCard>
-        //restaurantData.map(() => <RestaurantCard name={restaurantData[]["nome"]}></RestaurantCard>)
+  if(userType === "clientes"){
+    return(
+      <View style={styles.container}>
+          <Text style={styles.title}>Restaurantes</Text>
+          <View style={styles.restaurantList}>
+            {(restaurantData.length !== 0) &&
+              restaurantData.map((elem, i) => <RestaurantCard key={i} name={elem["nome"]}></RestaurantCard>)
+            }
+          </View>
+          <BottomTabNav></BottomTabNav>
+        
+      </View>
+    )
+  }
 
-      }
-      <BottomTabNav></BottomTabNav>
-    </View>
-  )
+  else if(userType === "restaurant"){
+    return;
+  }
 
-      /*
-  return(
-    <View style={styles.container}>
-      <Text style={{fontSize: 30, marginBottom: 50}}>Restaurantes</Text>
-        <RestaurantCard name={'Churassic Park'}/>
-        <RestaurantCard name={'Douglas Lanches'}/>
-        <RestaurantCard name={'Marmitex do Creitons'}/>
-        <RestaurantCard name={'Shinobi Lamen'}/>
-        <BottomTabNav></BottomTabNav>
-    </View>
-  )*/
+  else{
+    return;
+  }
 }
 
 const styles = StyleSheet.create({
+  restaurantList: {
+    marginTop: 20,
+    width: '100%',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  title: {
+    fontSize: 30, 
+    fontWeight: 'bold',
+    marginTop: 50
+  },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
     backgroundColor: '#f9f1f7',
   },
-}) 
+});

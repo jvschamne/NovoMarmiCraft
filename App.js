@@ -6,7 +6,7 @@ import LoginScreen from './screens/Login';
 import Restaurant from './screens/Restaurant';
 import Signup from './screens/Signup';
 import Register from './screens/Register';
-
+import Perfil from './screens/Perfil';
     
 //firebase
 import app from './config/firebase';
@@ -44,6 +44,7 @@ const App = () => {
         <Stack.Screen name="Restaurant" component={Restaurant} />
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Perfil" component={Perfil} />
       </Stack.Navigator>
     </NavigationContainer>
   ); 

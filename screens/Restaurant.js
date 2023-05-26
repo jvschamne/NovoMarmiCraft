@@ -6,15 +6,10 @@ import OptionCard from '../components/OptionCard';
 export default function Restaurant() {
     const navigation = useNavigation();
 
-    const handleLogin = () => {
-        console.log('ok')
-        navigation.navigate('Login');
-    };
-    
   return(
     <View style={styles.container}>
       <View style={styles.container2}>
-        <Text style={{fontSize: 30}}>Churrassic Park</Text>
+        <Text style={{fontSize: 30, marginTop: 20}}>Churrassic Park</Text>
         <Text style={{fontSize: 20, marginTop: 15}}>Endereço</Text>
         <Text style={{fontSize: 20, marginTop: 15}}>1,5Km - Aberto</Text>
       </View>
@@ -23,8 +18,7 @@ export default function Restaurant() {
       <OptionCard/>
       <OptionCard/>
       <OptionCard/>
-
-        <BottomTabNav></BottomTabNav>
+      <BottomTabNav></BottomTabNav>
     </View>
   )
 }
@@ -38,7 +32,7 @@ const styles = StyleSheet.create({
   },
   container2: {
     width: '100%',
-    padding: '20px',
+    padding: 20,
     backgroundColor: '#fcc40d',
     alignItems: 'center',
     justifyContent: 'center',
