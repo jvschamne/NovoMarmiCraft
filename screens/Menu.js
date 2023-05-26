@@ -13,8 +13,8 @@ export default function Menu(props) {
   const uId = props.route.params.uId;
   console.log("LOGGED USER uID: "+uId);
 
-  [userType, setUserType] = useState("");
-  []
+  const [userType, setUserType] = useState("");
+  const [restaurantData, setRestaurantData] = useState()
 
   const getUserType = async () => {
     let type = "";
@@ -26,18 +26,22 @@ export default function Menu(props) {
     const docSnapClients = await getDoc(docRefClients);
     const docSnapRestaurants = await getDoc(docRefRestaurants);
     const docSnapDelivery = await getDoc(docRefDelivery);
-
+    
+    console.log("\n\n----- MENU SCREEN -----");
     if (docSnapClients.exists()) {
       console.log("INFO CLIENTE LOGADO:", docSnapClients.data());
       type = "clientes";
+      console.log("MENU TYPE: "+type);
     } 
     else if (docSnapRestaurants.exists()) {
       console.log("INFO RESTAURANTE LOGADO:", docSnapRestaurants.data());
       type = "restaurantes";
+      console.log("MENU TYPE: "+type);
     }
     else if (docSnapDelivery.exists()) {
       console.log("INFO ENTREGADOR LOGADO:", docSnapDelivery.data());
       type = "entregadores";
+      console.log("MENU TYPE: "+type);
     }
     else {
       // docSnap.data() will be undefined in this case
@@ -45,6 +49,8 @@ export default function Menu(props) {
     }
 
     setUserType(type);
+    getRestaurantData();
+    
   };
 
 
@@ -52,14 +58,21 @@ export default function Menu(props) {
   const getRestaurantData = async () => {
     const q = query(collection(db, "restaurantes"));
     const querySnapshot = await getDocs(q);
-    
-    console.log("INFO RESTAURANTES: ")
+    let restaurants = [];
+
     querySnapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
+
       console.log(doc.id, " => ", doc.data());
+
+      restaurants.push(doc.data());
     });
 
+    setRestaurantData(restaurants);
+
   }
+
+  
 
 
   useEffect(() => {
@@ -79,13 +92,26 @@ export default function Menu(props) {
   return(
     <View style={styles.container}>
       <Text style={{fontSize: 30, marginBottom: 50}}>Restaurantes</Text>
+      {(restaurantData.length !== 0) &&
+        <RestaurantCard></RestaurantCard>
+        //restaurantData.map(() => <RestaurantCard name={restaurantData[]["nome"]}></RestaurantCard>)
+
+      }
+      <BottomTabNav></BottomTabNav>
+    </View>
+  )
+
+      /*
+  return(
+    <View style={styles.container}>
+      <Text style={{fontSize: 30, marginBottom: 50}}>Restaurantes</Text>
         <RestaurantCard name={'Churassic Park'}/>
         <RestaurantCard name={'Douglas Lanches'}/>
         <RestaurantCard name={'Marmitex do Creitons'}/>
         <RestaurantCard name={'Shinobi Lamen'}/>
         <BottomTabNav></BottomTabNav>
     </View>
-  )
+  )*/
 }
 
 const styles = StyleSheet.create({
