@@ -9,12 +9,10 @@ import app from '../config/firebase';
 export default function Menu(props) {
   const db = getFirestore(app);
   const navigation = useNavigation();
-  const restaurantes = useState(["res1", "res2", "res3"])
   const uId = props.route.params.uId;
-  console.log("LOGGED USER uID: "+uId);
 
   [userType, setUserType] = useState("");
-  []
+  [restaurantData, setRestaurantData] = useState([]);
 
   const getUserType = async () => {
     let type = "";
@@ -26,18 +24,22 @@ export default function Menu(props) {
     const docSnapClients = await getDoc(docRefClients);
     const docSnapRestaurants = await getDoc(docRefRestaurants);
     const docSnapDelivery = await getDoc(docRefDelivery);
-
+    
+    console.log("\n\n----- MENU SCREEN -----");
     if (docSnapClients.exists()) {
       console.log("INFO CLIENTE LOGADO:", docSnapClients.data());
       type = "clientes";
+      console.log("MENU TYPE: "+type);
     } 
     else if (docSnapRestaurants.exists()) {
       console.log("INFO RESTAURANTE LOGADO:", docSnapRestaurants.data());
       type = "restaurantes";
+      console.log("MENU TYPE: "+type);
     }
     else if (docSnapDelivery.exists()) {
       console.log("INFO ENTREGADOR LOGADO:", docSnapDelivery.data());
       type = "entregadores";
+      console.log("MENU TYPE: "+type);
     }
     else {
       // docSnap.data() will be undefined in this case
@@ -45,32 +47,39 @@ export default function Menu(props) {
     }
 
     setUserType(type);
+    getRestaurantData();
+    
   };
-
 
 
   const getRestaurantData = async () => {
     const q = query(collection(db, "restaurantes"));
     const querySnapshot = await getDocs(q);
-    
-    console.log("INFO RESTAURANTES: ")
+    let restaurants = [];
+
     querySnapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
+
       console.log(doc.id, " => ", doc.data());
+
+      restaurants.push(doc.data());
     });
+
+    setRestaurantData(restaurants);
 
   }
 
-
   useEffect(() => {
-    getUserType();    
+    getUserType();     
   }, []);
 
-  useEffect(() => {
-    getRestaurantData();    
-  }, []);
 
-  console.log("MENU TYPE: "+userType);
+
+
+
+  console.log("RESTAURANTS DATA: ", restaurantData);
+  console.log("lenght: ", (restaurantData.length!==0));
+  //console.log(restaurantData[0]["nome"]);
 
 
   //???
@@ -79,11 +88,12 @@ export default function Menu(props) {
   return(
     <View style={styles.container}>
       <Text style={{fontSize: 30, marginBottom: 50}}>Restaurantes</Text>
-        <RestaurantCard name={'Churassic Park'}/>
-        <RestaurantCard name={'Douglas Lanches'}/>
-        <RestaurantCard name={'Marmitex do Creitons'}/>
-        <RestaurantCard name={'Shinobi Lamen'}/>
-        <BottomTabNav></BottomTabNav>
+      {(restaurantData.length !== 0) &&
+
+        restaurantData.map((elem) => <RestaurantCard name={elem["nome"]}></RestaurantCard>)
+       
+      }
+      <BottomTabNav></BottomTabNav>
     </View>
   )
 }
