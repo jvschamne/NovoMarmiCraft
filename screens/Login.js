@@ -6,7 +6,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword  } 
 import { getFirestore, collection, doc, setDoc, getDoc } from 'firebase/firestore';
 import app from '../config/firebase';
 
-export default function App() {
+export default function LoginScreen() {
   const navigation = useNavigation();
 
   const [email, setEmail] = useState('');
