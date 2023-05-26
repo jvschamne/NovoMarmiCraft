@@ -3,19 +3,18 @@ import BottomTabNav from '../components/BottomTabNav';
 import { useNavigation } from '@react-navigation/native';
 import OptionCard from '../components/OptionCard';
 
-export default function Restaurant() {
-    const navigation = useNavigation();
+export default function Restaurant(props) {
+  const restaurantData = props.route.params;
+  console.log("RESTAURANT SCREEN: ", restaurantData);
+  const navigation = useNavigation();
 
-    const handleLogin = () => {
-        console.log('ok')
-        navigation.navigate('Login');
-    };
-    
   return(
     <View style={styles.container}>
       <View style={styles.container2}>
-        <Text style={{fontSize: 30}}>Churrassic Park</Text>
-        <Text style={{fontSize: 20, marginTop: 15}}>Endereço</Text>
+        <Text style={styles.restaurantName}>{restaurantData["nome"]}</Text>
+        <Text style={styles.address}>{restaurantData["bairro"]}</Text>
+        <Text style={styles.address}>{restaurantData["rua"]}</Text>
+        <Text style={styles.address}>{restaurantData["numero"]}</Text>
         <Text style={{fontSize: 20, marginTop: 15}}>1,5Km - Aberto</Text>
       </View>
       <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png' }} style={styles.logo}></Image>
@@ -38,10 +37,19 @@ const styles = StyleSheet.create({
   },
   container2: {
     width: '100%',
-    padding: '20px',
+    padding: 20,
     backgroundColor: '#fcc40d',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  restaurantName: {
+    marginTop: 40,
+    fontSize: 30,
+    fontWeight: 'bold'
+  },
+  address: {
+    fontSize: 20, 
+    marginTop: 5
   },
   logo: {
     width: 200,

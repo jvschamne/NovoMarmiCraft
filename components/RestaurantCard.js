@@ -1,28 +1,32 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function RestaurantCard ({name}) {
-
+export default function RestaurantCard ({data}) {
+    const dados = data;
+    console.log("--- RESTAURANT CARD: ", dados["nome"], " ----");
     const navigation = useNavigation();
 
     const handleLogin = () => {
         console.log('ok')
-        navigation.navigate('Restaurant');
+        navigation.navigate('Restaurant', dados);
     };
     
 
     return(
         <TouchableOpacity style={styles.card} onPress={handleLogin}>
-            <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png'}}
-            style={{ width: 70, height: 70}}/>
+            <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png'}} style={styles.image}/>
             <Text style={{fontSize: 15, marginLeft: 30}}>
-                {name}
+                {dados["nome"]}
             </Text>
         </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
+    image: {
+        width: 70, 
+        height: 70
+    },
     card: {
         flexDirection: 'row',
         alignItems: 'center',

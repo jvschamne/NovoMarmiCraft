@@ -12,7 +12,7 @@ export default function Menu(props) {
   const uId = props.route.params.uId;
 
   const [userType, setUserType] = useState("");
-  const [restaurantData, setRestaurantData] = useState([]);
+  const [restaurantsData, setRestaurantsData] = useState([]);
 
   const getUserType = async () => {
     let type = "";
@@ -65,7 +65,7 @@ export default function Menu(props) {
       restaurants.push(doc.data());
     });
 
-    setRestaurantData(restaurants);
+    setRestaurantsData(restaurants);
 
   }
 
@@ -77,8 +77,8 @@ export default function Menu(props) {
 
 
 
-  console.log("RESTAURANTS DATA: ", restaurantData);
-  console.log("lenght: ", (restaurantData.length!==0));
+  console.log("RESTAURANTS DATA: ", restaurantsData);
+  console.log("lenght: ", (restaurantsData.length!==0));
   //console.log(restaurantData[0]["nome"]);
 
 
@@ -91,9 +91,9 @@ export default function Menu(props) {
       <View style={styles.container}>
           <Text style={styles.title}>Restaurantes</Text>
           <View style={styles.restaurantList}>
-            {(restaurantData.length !== 0) &&
+            {(restaurantsData.length !== 0) &&
 
-              restaurantData.map((elem, i) => <RestaurantCard key={i} name={elem["nome"]}></RestaurantCard>)
+              restaurantsData.map((elem, i) => <RestaurantCard key={i} data={elem}></RestaurantCard>)
             
             }
           </View>
