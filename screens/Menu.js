@@ -11,8 +11,8 @@ export default function Menu(props) {
   const navigation = useNavigation();
   const uId = props.route.params.uId;
 
-  [userType, setUserType] = useState("");
-  [restaurantData, setRestaurantData] = useState([]);
+  const [userType, setUserType] = useState("");
+  const [restaurantData, setRestaurantData] = useState([]);
 
   const getUserType = async () => {
     let type = "";
@@ -84,25 +84,51 @@ export default function Menu(props) {
 
   //???
   navigation.addListener('beforeRemove', (e) => e.preventDefault());
+  console.log("userType: ", userType);
 
-  return(
-    <View style={styles.container}>
-      <Text style={{fontSize: 30, marginBottom: 50}}>Restaurantes</Text>
-      {(restaurantData.length !== 0) &&
+  if(userType === "clientes"){
+    return(
+      <View style={styles.container}>
+          <Text style={styles.title}>Restaurantes</Text>
+          <View style={styles.restaurantList}>
+            {(restaurantData.length !== 0) &&
 
-        restaurantData.map((elem) => <RestaurantCard name={elem["nome"]}></RestaurantCard>)
-       
-      }
-      <BottomTabNav></BottomTabNav>
-    </View>
-  )
+              restaurantData.map((elem, i) => <RestaurantCard key={i} name={elem["nome"]}></RestaurantCard>)
+            
+            }
+          </View>
+          <BottomTabNav></BottomTabNav>
+        
+      </View>
+    )
+  }
+
+  else if(userType === "restaurant"){
+    return;
+  }
+
+  else{
+    return;
+  }
 }
 
 const styles = StyleSheet.create({
+  restaurantList: {
+    marginTop: 20,
+    width: '100%',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  title: {
+    fontSize: 30, 
+    fontWeight: 'bold',
+    marginTop: 50
+  },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
     backgroundColor: '#f9f1f7',
   },
-}) 
+});
