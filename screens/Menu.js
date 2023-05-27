@@ -79,6 +79,7 @@ export default function Menu(props) {
 
   console.log("RESTAURANTS DATA: ", restaurantsData);
   console.log("lenght: ", (restaurantsData.length!==0));
+
   //console.log(restaurantData[0]["nome"]);
 
 
@@ -95,6 +96,7 @@ export default function Menu(props) {
 
               restaurantsData.map((elem, i) => <RestaurantCard key={i} data={elem}></RestaurantCard>)
             
+
             }
           </View>
           <BottomTabNav></BottomTabNav>

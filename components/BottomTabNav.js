@@ -5,22 +5,18 @@ export default function BottomTabNav () {
     
     const navigation = useNavigation();
      
-    const handleLogin = () => {
-        // implementar a lógica de autenticação aqui
-        console.log('oi')
-        navigation.navigate('Login');
+    const handleLogin = (screen) => {
+        console.log('navigate', screen)
+        navigation.navigate(screen);
     };
 
 
     return(
         <View style={styles.nav}>
-            <TouchableOpacity style={styles.navButton} onPress={handleLogin}>
+            <TouchableOpacity style={styles.navButton} onPress={() => handleLogin('Menu')}>
                 <Text style={styles.text}>Restaurantes</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navButton} onPress={handleLogin}>
-                <Text style={styles.text}>Pesquisar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.navButton} onPress={handleLogin}>
+            <TouchableOpacity style={styles.navButton} onPress={() => handleLogin('Perfil')}>
                 <Text style={styles.text}>Perfil</Text>
             </TouchableOpacity>
         </View>

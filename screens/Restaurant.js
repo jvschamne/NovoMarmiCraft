@@ -22,8 +22,7 @@ export default function Restaurant(props) {
       <OptionCard/>
       <OptionCard/>
       <OptionCard/>
-
-        <BottomTabNav></BottomTabNav>
+      <BottomTabNav></BottomTabNav>
     </View>
   )
 }
