@@ -1,13 +1,13 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function BottomTabNav () {   
+export default function BottomTabNav ({userData, userType}) {   
     
     const navigation = useNavigation();
      
-    const handleLogin = (screen) => {
+    const handleLogin = (screen, data) => {
         console.log('navigate', screen)
-        navigation.navigate(screen);
+        navigation.navigate(screen, data);
     };
 
 
@@ -16,7 +16,7 @@ export default function BottomTabNav () {
             <TouchableOpacity style={styles.navButton} onPress={() => handleLogin('Menu')}>
                 <Text style={styles.text}>Restaurantes</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navButton} onPress={() => handleLogin('Perfil')}>
+            <TouchableOpacity style={styles.navButton} onPress={() => handleLogin('Perfil', {userData: userData, userType: userType})}>
                 <Text style={styles.text}>Perfil</Text>
             </TouchableOpacity>
         </View>

@@ -61,7 +61,7 @@ export default function LoginScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder="Nome de usuário"
+        placeholder="E-mail"
         onChangeText={text => setEmail(text)}
         value={email}
       />

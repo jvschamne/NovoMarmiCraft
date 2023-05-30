@@ -7,6 +7,9 @@ import Restaurant from './screens/Restaurant';
 import Signup from './screens/Signup';
 import Register from './screens/Register';
 import Perfil from './screens/Perfil';
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
     
 //firebase
 import app from './config/firebase';

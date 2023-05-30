@@ -12,10 +12,12 @@ export default function Menu(props) {
   const uId = props.route.params.uId;
 
   const [userType, setUserType] = useState("");
+  const [userData, setUserData] = useState({});
   const [restaurantsData, setRestaurantsData] = useState([]);
 
   const getUserType = async () => {
     let type = "";
+    let userData = {};
 
     const docRefClients = doc(db, "clientes", uId);
     const docRefRestaurants = doc(db, "restaurantes", uId);
@@ -27,17 +29,20 @@ export default function Menu(props) {
     
     console.log("\n\n----- MENU SCREEN -----");
     if (docSnapClients.exists()) {
-      console.log("INFO CLIENTE LOGADO:", docSnapClients.data());
+      userData = docSnapClients.data();
+      console.log("INFO CLIENTE LOGADO:", userData);
       type = "clientes";
       console.log("MENU TYPE: "+type);
     } 
     else if (docSnapRestaurants.exists()) {
-      console.log("INFO RESTAURANTE LOGADO:", docSnapRestaurants.data());
+      userData = docSnapRestaurants.data();
+      console.log("INFO RESTAURANTE LOGADO:", userData);
       type = "restaurantes";
       console.log("MENU TYPE: "+type);
     }
     else if (docSnapDelivery.exists()) {
-      console.log("INFO ENTREGADOR LOGADO:", docSnapDelivery.data());
+      userData = docSnapDelivery.data();
+      console.log("INFO ENTREGADOR LOGADO:", userData);
       type = "entregadores";
       console.log("MENU TYPE: "+type);
     }
@@ -46,7 +51,9 @@ export default function Menu(props) {
       console.log("No such document!");
     }
 
+    setUserData(userData);
     setUserType(type);
+
     getRestaurantData();
     
   };
@@ -99,7 +106,7 @@ export default function Menu(props) {
 
             }
           </View>
-          <BottomTabNav></BottomTabNav>
+          <BottomTabNav userData={userData} userType={userType}></BottomTabNav>
         
       </View>
     )
