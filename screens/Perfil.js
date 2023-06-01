@@ -9,7 +9,7 @@ export default function Perfil() {
   const [image, setImage] = useState(null);
 
   const [userData, setUserData] = useContext(Context).prop1;
-  const [userType, setUserType] = useContext(Context).prop2;
+  const userType = useContext(Context).prop2[0];
   const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
   console.log("TELA PERFIL - userType: ", userType);
 
@@ -110,6 +110,9 @@ export default function Perfil() {
         <TouchableOpacity style={styles.button} onPress={saveChanges}>
           <Text style={styles.buttonText}>SALVAR</Text>
         </TouchableOpacity>
+
+        <StatusBar style="auto" />
+        <BottomTabNav></BottomTabNav>
       </View>
     );
   }
