@@ -1,18 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import RestaurantCard from '../components/RestaurantCard';
 import BottomTabNav from '../components/BottomTabNav';
 import { useNavigation } from '@react-navigation/native';
 import { getFirestore, collection, doc, setDoc, getDoc, query, getDocs } from 'firebase/firestore';
 import app from '../config/firebase';
+import Context from '../Context';
 
 export default function Menu(props) {
   const db = getFirestore(app);
   const navigation = useNavigation();
   const uId = props.route.params.uId;
 
-  const [userType, setUserType] = useState("");
-  const [userData, setUserData] = useState({});
+  const [userType, setUserType] = useContext(Context).prop2;
+  const [userData, setUserData] = useContext(Context).prop1;
   const [restaurantsData, setRestaurantsData] = useState([]);
 
   const getUserType = async () => {

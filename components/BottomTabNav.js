@@ -5,18 +5,18 @@ export default function BottomTabNav ({userData, userType}) {
     
     const navigation = useNavigation();
      
-    const handleLogin = (screen, data) => {
+    const handlePress = (screen) => {
         console.log('navigate', screen)
-        navigation.navigate(screen, data);
+        navigation.navigate(screen);
     };
 
 
     return(
         <View style={styles.nav}>
-            <TouchableOpacity style={styles.navButton} onPress={() => handleLogin('Menu')}>
+            <TouchableOpacity style={styles.navButton} onPress={() => handlePress('Menu')}>
                 <Text style={styles.text}>Restaurantes</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navButton} onPress={() => handleLogin('Perfil', {userData: userData, userType: userType})}>
+            <TouchableOpacity style={styles.navButton} onPress={() => handlePress('Perfil')}>
                 <Text style={styles.text}>Perfil</Text>
             </TouchableOpacity>
         </View>

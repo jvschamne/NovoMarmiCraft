@@ -1,17 +1,19 @@
 import { StyleSheet, Text, View, StatusBar, TouchableOpacity, Image } from 'react-native';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import BottomTabNav from '../components/BottomTabNav';
 import {launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus, MediaTypeOptions} from 'expo-image-picker';
+import Context from '../Context';
 
-export default function Perfil(props) {
+export default function Perfil() {
   const [edit, setEdit] = useState(false);
   const [image, setImage] = useState(null);
+
+  const [userData, setUserData] = useContext(Context).prop1;
+  const [userType, setUserType] = useContext(Context).prop2;
   const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
-  const userData = props.route.params.userData;
-  const userType = props.route.params.userType;
   console.log("TELA PERFIL - userType: ", userType);
 
-  async function verifyPermission(){
+  const verifyPermission = async () => {
     if (cameraPermissionInformation.status===PermissionStatus.UNDETERMINED){
         const permissionResponse=await requestPermission();
 
@@ -64,6 +66,13 @@ export default function Perfil(props) {
     }
   };
 
+
+  const saveChanges = async () => {
+    
+    
+    setEdit(false);
+  }
+
   if(!edit){
     return (
         <View style={styles.container}>
@@ -98,7 +107,7 @@ export default function Perfil(props) {
           <Text>Galeria</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={() => setEdit(false)}>
+        <TouchableOpacity style={styles.button} onPress={saveChanges}>
           <Text style={styles.buttonText}>SALVAR</Text>
         </TouchableOpacity>
       </View>

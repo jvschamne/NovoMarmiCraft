@@ -8,6 +8,7 @@ import Signup from './screens/Signup';
 import Register from './screens/Register';
 import Perfil from './screens/Perfil';
 import { LogBox } from 'react-native';
+import Context from './Context';
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
     
@@ -20,7 +21,10 @@ const db = getFirestore(app);
 const Stack = createStackNavigator();
 
 
+
 const App = () => {
+  const [userData, setUserData] = useState({});
+  const [userType, setUserType] = useState("");
 
   const getData = async () => {
     const docRef = doc(db, "clientes", "teste");
@@ -41,14 +45,16 @@ const App = () => {
  
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Menu" component={Menu} />
-        <Stack.Screen name="Restaurant" component={Restaurant} />
-        <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="Perfil" component={Perfil} />
-      </Stack.Navigator>
+      <Context.Provider value={{prop1: [userData, setUserData], prop2: [userType, setUserType]}}>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Menu" component={Menu} />
+          <Stack.Screen name="Restaurant" component={Restaurant} />
+          <Stack.Screen name="Signup" component={Signup} />
+          <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Perfil" component={Perfil} />
+        </Stack.Navigator>
+      </Context.Provider>
     </NavigationContainer>
   ); 
 };
