@@ -5,7 +5,7 @@ import BottomTabNav from '../components/BottomTabNav';
 import { useNavigation } from '@react-navigation/native';
 import { getFirestore, collection, doc, setDoc, getDoc, query, getDocs } from 'firebase/firestore';
 import app from '../config/firebase';
-import Context from '../Context';
+import Context from './../Context';
 
 export default function Menu(props) {
   const db = getFirestore(app);
@@ -82,7 +82,7 @@ export default function Menu(props) {
   }, []);
 
 
-
+  console.log(userType)
 
 
   console.log("RESTAURANTS DATA: ", restaurantsData);
@@ -113,8 +113,12 @@ export default function Menu(props) {
     )
   }
 
-  else if(userType === "restaurant"){
-    return;
+  else if(userType === "restaurantes"){
+    return(
+      <View style={styles.container}>
+          <Text style={styles.title}>Visão do Restaurante</Text>        
+      </View>
+    )
   }
 
   else{
