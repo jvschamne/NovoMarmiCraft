@@ -8,8 +8,8 @@ export default function Perfil() {
   const [edit, setEdit] = useState(false);
   const [image, setImage] = useState(null);
 
-  const [userData, setUserData] = useContext(Context).prop1;
-  const userType = useContext(Context).prop2[0];
+  const [userData, setUserData] = useContext(Context).data;
+  const userType = useContext(Context).type[0];
   const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
   console.log("TELA PERFIL - userType: ", userType);
 

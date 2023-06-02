@@ -1,10 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword  } from "firebase/auth";
 import { getFirestore, collection, doc, setDoc, getDoc } from 'firebase/firestore';
 import app from '../config/firebase';
+import Context from '../Context';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -15,6 +16,8 @@ export default function LoginScreen() {
   const [loggedType, setLoggedType] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState({});
+
+  const setUId = useContext(Context).id[1];
 
 
   const handleSignup = () => {
@@ -35,9 +38,11 @@ export default function LoginScreen() {
         
         console.log("UID: "+userInfo.uid);
 
+        setUId(userInfo.uid);
+
         //navega para dentro do app
         setLoggedIn(true)
-        navigation.navigate('Menu', {uId : userInfo.uid});
+        navigation.navigate('Menu');
       })
       .catch((error) => {
         const errorCode = error.code;
