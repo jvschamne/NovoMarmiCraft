@@ -7,13 +7,13 @@ import { getFirestore, collection, doc, setDoc, getDoc, query, getDocs } from 'f
 import app from '../config/firebase';
 import Context from './../Context';
 
-export default function Menu(props) {
+export default function Menu() {
   const db = getFirestore(app);
   const navigation = useNavigation();
-  const uId = props.route.params.uId;
 
-  const [userType, setUserType] = useContext(Context).prop2;
-  const [userData, setUserData] = useContext(Context).prop1;
+  const uId = useContext(Context).id[0];
+  const [userType, setUserType] = useContext(Context).type;
+  const [userData, setUserData] = useContext(Context).data;
   const [restaurantsData, setRestaurantsData] = useState([]);
 
   const getUserType = async () => {

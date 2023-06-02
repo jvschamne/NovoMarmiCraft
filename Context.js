@@ -1,8 +1,9 @@
 import React, { createContext } from 'react';
 
 const Context = createContext({
-    prop1: [],
-    prop2: []
+    data: [],
+    type: [],
+    id: [],
 });
 
 export default Context;

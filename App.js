@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Menu from './screens/Menu'
@@ -25,6 +25,7 @@ const Stack = createStackNavigator();
 const App = () => {
   const [userData, setUserData] = useState({});
   const [userType, setUserType] = useState("");
+  const [userId, setUserId] = useState("");
 
   const getData = async () => {
     const docRef = doc(db, "clientes", "teste");
@@ -45,7 +46,7 @@ const App = () => {
  
   return (
     <NavigationContainer>
-      <Context.Provider value={{prop1: [userData, setUserData], prop2: [userType, setUserType]}}>
+      <Context.Provider value={{data: [userData, setUserData], type: [userType, setUserType], id: [userId, setUserId]}}>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Menu" component={Menu} />
