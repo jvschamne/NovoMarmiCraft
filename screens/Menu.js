@@ -125,7 +125,7 @@ export default function Menu() {
     );
   }  
  
-  else if (userType === ""){//"entregadores") {
+  else if (userType === "entregadores") {
     return(
       <View style={styles.container}>
         <Text style={styles.title}>

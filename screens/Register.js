@@ -43,7 +43,7 @@ export default function Register(props) {
                 });
             }
             else {
-                await setDoc(doc(deliveriesRef, id), {
+                await setDoc(doc(ref, userID), {
                     "chave PIX": pix,
                     "e-mail": email, 
                     "nome": name,
