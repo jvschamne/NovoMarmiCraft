@@ -33,6 +33,7 @@ const Pedido = ({ info }) => {
       <Modal visible={modalVisible} animationType="fade" transparent>
         <View style={styles.modalContainer}>
           <FlatList
+            style={styles.flatList}
             data={statusOptions}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
@@ -75,26 +76,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   modalContainer: {
-    flex: 1,
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    height: '30%',
+    marginTop: '70%',
   },
   statusOption: {
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
-  updateButton: {
-    backgroundColor: '#fcc40d',
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  updateButtonText: {
-    color: 'white',
-    textAlign: 'center',
-  },
+  flatList: {
+    backgroundColor: 'rgba(112, 196, 82, 0.8)',
+    borderRadius: 25,
+    borderColor: 'black',
+    borderWidth: 2,
+    padding: 10
+  }
 });
 
 export default Pedido;

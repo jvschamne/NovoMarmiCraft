@@ -29,6 +29,11 @@ export default function Menu() {
     ["Pizza Calabresa", "Concluído", "Rua FPD"],
   ];
 
+  const pedidosEntregador = [
+    ["X-Burguer", "Levando ao cliente", "Rua Alvo Dumbledore, núm 245"],
+    ["X-Bacon", "Entregue", "Rua Everson Olhos, núm 989"],
+  ]
+
   const getUserType = async () => {
     let type = "";
     let userData = {};
@@ -118,7 +123,30 @@ export default function Menu() {
         <BottomTabNav userData={userData} userType={userType}></BottomTabNav>
       </View>
     );
-  } else {
+  }  
+ 
+  else if (userType === ""){//"entregadores") {
+    return(
+      <View style={styles.container}>
+        <Text style={styles.title}>
+          Entregador
+        </Text>
+        <View style={styles.ganhos}>
+         <Text style={styles.title2}>Seus ganhos hoje: R$35,90</Text>
+          
+        </View>
+        <ScrollView style={styles.pedidos} contentContainerStyle={styles.scrollViewContent}>
+          {(pedidosEntregador.length !== 0) &&
+            pedidosEntregador.map((info, i) => <Pedido key={i} info={info}></Pedido>)
+          }
+        </ScrollView>
+        <BottomTabNav userData={userData} userType={userType}></BottomTabNav>
+      </View>
+    )
+  }
+  
+  
+  else {
     return null;
   }
 }
@@ -144,5 +172,19 @@ const styles = StyleSheet.create({
   pedidos: {
     backgroundColor: '#fcc40d',
     width: '95%',
-  }
+  },
+  ganhos: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: "white",
+    borderRadius: 25,
+    width: '80%',
+    borderColor: 'black',
+    borderWidth: 1,
+  },
+  title2: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
 });
