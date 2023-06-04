@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import BottomTabNav from '../components/BottomTabNav';
 import { useNavigation } from '@react-navigation/native';
 import OptionCard from '../components/OptionCard';
@@ -19,9 +19,13 @@ export default function Restaurant(props) {
       </View>
       <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png' }} style={styles.logo}></Image>
       <Text style={{fontSize: 30, marginBottom: 35}}>Cardápio</Text>
-      <OptionCard/>
-      <OptionCard/>
-      <OptionCard/>
+      
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <OptionCard/>
+        <OptionCard/>
+        <OptionCard/>
+      </ScrollView>
+      
       <BottomTabNav></BottomTabNav>
     </View>
   )
@@ -53,5 +57,8 @@ const styles = StyleSheet.create({
   logo: {
     width: 200,
     height: 200
+  },
+  scrollViewContent: {
+    width: 350,
   },
 })

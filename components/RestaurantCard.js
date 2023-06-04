@@ -15,9 +15,16 @@ export default function RestaurantCard ({data}) {
     return(
         <TouchableOpacity style={styles.card} onPress={handleLogin}>
             <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png'}} style={styles.image}/>
-            <Text style={{fontSize: 15, marginLeft: 30}}>
-                {dados["nome"]}
-            </Text>
+            <View styles={styles.info}>
+                <Text style={{ marginLeft: 30}}>
+                    {dados["nome"]}
+                </Text>
+               
+                    <Text style={{ marginLeft: 30}}>
+                        Entrega: R$5,99
+                    </Text>
+              
+            </View>
         </TouchableOpacity>
     )
 }
@@ -33,11 +40,16 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         backgroundColor: '#fff',
         height: 100,
-        width: '90%',
+        width: 300,
         borderRadius: 25,
         borderColor: 'black',
         borderWidth: 1,
-        marginBottom: 25
+        marginBottom: 25,
+    },
+    info: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
   

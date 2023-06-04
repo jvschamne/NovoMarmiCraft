@@ -135,7 +135,7 @@ export default function Menu() {
          <Text style={styles.title2}>Seus ganhos hoje: R$35,90</Text>
           
         </View>
-        <ScrollView style={styles.pedidos} contentContainerStyle={styles.scrollViewContent}>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
           {(pedidosEntregador.length !== 0) &&
             pedidosEntregador.map((info, i) => <Pedido key={i} info={info}></Pedido>)
           }
@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
+    width: '100%',
   },
   title: {
     fontSize: 30,
