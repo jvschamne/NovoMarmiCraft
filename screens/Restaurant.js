@@ -28,7 +28,7 @@ export default function Restaurant(props) {
       <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png' }} style={styles.logo}></Image>
       <Text style={{fontSize: 30, marginBottom: 35}}>Cardápio</Text>
       
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <ScrollView contentContainerStyle={styles.scrollViewContent} style={{marginBottom: 100}}>
         {opcoes.length != 0 &&
           opcoes.map((opcao, i) => <OptionCard key={i} name={opcao[0]} price={opcao[1]}/>)
         }
@@ -68,6 +68,8 @@ const styles = StyleSheet.create({
     height: 150
   },
   scrollViewContent: {
-    width: 350,
+    flexGrow: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
   },
 })

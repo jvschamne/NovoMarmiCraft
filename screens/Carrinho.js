@@ -33,44 +33,6 @@ export default function Carrinho(props) {
         </View>
     )
 }
-/*
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        backgroundColor: '#f9f1f7',
-    },
-    title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        marginTop: 50,
-        marginBottom: 50,
-    },
-    checkoutButton: {
-        backgroundColor: '#fcc40d',
-        padding: 20,
-        borderRadius: 25,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    textButton: {
-        color: 'black',
-        fontWeight: 'bold',
-        fontSize: 20,
-    },
-    pagamento: {
-        position: 'absolute',
-        bottom: 150, // Ajuste conforme necessário
-    },
-    scrollViewContent: {
-        flexGrow: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});*/
-
 
 const styles = StyleSheet.create({
     container: {
