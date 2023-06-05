@@ -11,7 +11,6 @@ export default function Carrinho(props) {
         ["Pizza", "R$42,90"], 
         ["Churros", "R$12,90"],
         ["Sonho", "R$5,90"],
-        ["X-Burguer", "R$22,90"], 
     ]
 
     return(
