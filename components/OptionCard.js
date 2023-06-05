@@ -1,32 +1,43 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function OptionCard ({name}) {
+export default function OptionCard ({name, price}) {
 
     const navigation = useNavigation();
 
-    const handleLogin = () => {
+    const handleAddButton = () => {
         console.log('ok')
-        navigation.navigate('Restaurant');
+        navigation.navigate('Carrinho')
     };
     
 
     return(
-        <TouchableOpacity style={styles.card} onPress={handleLogin}>
-            <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png'}}
-            style={{ width: 70, height: 70}}/>
-            <Text style={{fontSize: 15, marginLeft: 30}}>
-                {name}
-            </Text>
+        <TouchableOpacity style={styles.card}>
+            <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png'}} style={{ width: 70, height: 70}}/>
+            <View style={styles.itemInfo}>
+                <Text style={{ marginBottom: 10}}>
+                    {name}
+                </Text>
+                <Text>
+                    {price}
+                </Text>
+            </View>
+            
+            <TouchableOpacity style={styles.addButton} onPress={handleAddButton}>
+                <Text style={{fontWeight: 'bold', fontSize: 20}}>
+                   +
+                </Text>
+            </TouchableOpacity>
         </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
     card: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'space-around',
         backgroundColor: '#fff',
         height: 100,
         width: '90%',
@@ -35,5 +46,19 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginBottom: 25
     },
+    addButton: {
+        color: 'white',
+        height: 50,
+        width: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#fcc40d',
+        borderRadius: 15,
+        borderColor: 'black',
+        borderWidth: 1,
+    },
+    itemInfo: {
+        flexDirection: 'column',
+    }
 });
-  
+   

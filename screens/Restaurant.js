@@ -8,6 +8,14 @@ export default function Restaurant(props) {
   console.log("RESTAURANT SCREEN: ", restaurantData);
   const navigation = useNavigation();
 
+
+  const opcoes = [
+    ["X-Burguer", "R$22,90"], 
+    ["Pizza", "R$42,90"], 
+    ["Churros", "R$12,90"],
+    ["Sonho", "R$5,90"]
+  ]
+
   return(
     <View style={styles.container}>
       <View style={styles.container2}>
@@ -21,9 +29,10 @@ export default function Restaurant(props) {
       <Text style={{fontSize: 30, marginBottom: 35}}>Cardápio</Text>
       
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <OptionCard/>
-        <OptionCard/>
-        <OptionCard/>
+        {opcoes.length != 0 &&
+          opcoes.map((opcao, i) => <OptionCard key={i} name={opcao[0]} price={opcao[1]}/>)
+        }
+        
       </ScrollView>
       
       <BottomTabNav></BottomTabNav>
@@ -55,8 +64,8 @@ const styles = StyleSheet.create({
     marginTop: 5
   },
   logo: {
-    width: 200,
-    height: 200
+    width: 150,
+    height: 150
   },
   scrollViewContent: {
     width: 350,

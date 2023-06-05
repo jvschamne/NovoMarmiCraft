@@ -7,6 +7,7 @@ import Restaurant from './screens/Restaurant';
 import Signup from './screens/Signup';
 import Register from './screens/Register';
 import Perfil from './screens/Perfil';
+import Carrinho from './screens/Carrinho';
 import { LogBox } from 'react-native';
 import Context from './Context';
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -49,6 +50,7 @@ const App = () => {
       <Context.Provider value={{data: [userData, setUserData], type: [userType, setUserType], id: [userId, setUserId]}}>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Carrinho" component={Carrinho} />
           <Stack.Screen name="Menu" component={Menu} />
           <Stack.Screen name="Restaurant" component={Restaurant} />
           <Stack.Screen name="Signup" component={Signup} />
