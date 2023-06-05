@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Alert, TextInput, StatusBar, TouchableOpacity, Image, ScrollView } from 'react-native';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import BottomTabNav from '../components/BottomTabNav';
 import {launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus, MediaTypeOptions} from 'expo-image-picker';
 import Context from '../Context';
@@ -8,23 +8,27 @@ import { getDownloadURL, deleteObject, listAll, getStorage, uploadBytes, ref } f
 import app from '../config/firebase';
 import PlateCard from '../components/PlateCard';
 import exampleImage from '../assets/profile-icon.png';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 const exampleImageUri = Image.resolveAssetSource(exampleImage).uri;
 
 
 export default function Perfil() {
   const db = getFirestore(app);
   const storage = getStorage(app);
+  const navigation = useNavigation();
   
   const [userData, setUserData] = useContext(Context).data;
-  const userType = useContext(Context).type[0];
-  const uId = useContext(Context).id[0];
+  const [userType, setUserType] = useContext(Context).type;
+  const [uId, setUId] = useContext(Context).id;
 
-  const initialImageUri = (userData["imageDownloadUrl"]) ? userData["imageDownloadUrl"] : exampleImageUri;
+  const userDocRef = doc(db, userType, uId);
+
+  
   const [edit, setEdit] = useState(false);
+  const initialImageUri = (userData["imageDownloadUrl"]) ? userData["imageDownloadUrl"] : exampleImageUri;
   const [image, setImage] = useState(initialImageUri);
 
   const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
-  console.log("TELA PERFIL - userType: ", userType);
 
   const [name, setName] = useState(userData["nome"]);
   //const [email, setEmail] = useState(userData["e-mail"]);
@@ -34,7 +38,34 @@ export default function Perfil() {
   const [telefone, setTelefone] = useState(userData["telefone"]);
   const [imageDownloadUrl, setImageDownloadUrl] = (userData["imageDownloadUrl"]) ? useState(userData["imageDownloadUrl"]) : useState("");
 
+  console.log("\n\n\n------TELA PERFIL------\nIMAGE DOWNLOAD URL: ", imageDownloadUrl);
+  console.log("IMAGE URI: ", image);
+  console.log("initialImageUri: "+initialImageUri);
+  console.log("edit mode - setEdit = "+edit+"\n\n\n");
+
+  useEffect(() => {
+    const updateImageData = async () => {
+      console.log("USE EFFECT - IMAGE DOWNLOAD URL ALTERADO!!!")
+      if(!userData["imageDownloadUrl"] || (userData["imageDownloadUrl"] && imageDownloadUrl!=="")){
+        await updateDoc(userDocRef, {
+          "imageDownloadUrl": imageDownloadUrl,
+        });
   
+        const docSnapUser = await getDoc(userDocRef);
+        if (docSnapUser.exists()) {
+          setUserData(docSnapUser.data());
+        }
+
+      }
+    }
+
+    updateImageData()
+    .catch(
+      (error) => console.log(error.message)
+    );
+
+  }, [imageDownloadUrl])
+
 
   const verifyPermission = async () => {
     if (cameraPermissionInformation.status===PermissionStatus.UNDETERMINED){
@@ -64,7 +95,7 @@ export default function Perfil() {
     const result = await launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0.1,
+      quality: 0,
     });
 
     console.log(result);
@@ -81,7 +112,7 @@ export default function Perfil() {
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0.1,
+      quality: 0,
     });
 
     console.log(result);
@@ -109,7 +140,7 @@ export default function Perfil() {
       .then(() => {
         getDownloadURL(imageRef).
           then((url) => {
-            setImageDownloadUrl(url);
+            setImageDownloadUrl(url)
           })
           .catch((error) => {
             console.log(error.message, "error getting image url");
@@ -127,24 +158,16 @@ export default function Perfil() {
 
   // Salva mudanças feitas pelo usuário ao seu perfil
   const saveChanges = async () => {
-    const userDocRef = doc(db, userType, uId);
 
+    if(image !== initialImageUri){
+      await uploadImage();
+    }
     
-    if(image !== exampleImageUri){
-      uploadImage();
-    }
-
-    if(!userData["imageDownloadUrl"]){
-      await updateDoc(userDocRef, {
-        "bairro": neighbourhood,
-        "nome": name, 
-        "numero": number,
-        "rua": street,
-        "telefone": telefone,
-        "imageDownloadUrl": imageDownloadUrl,
-      });
-    }
-    else{
+    if(neighbourhood!==userData["bairro"] 
+    || name!==userData["nome"] 
+    || number!==userData["numero"] 
+    || street!==userData["rua"] 
+    || telefone!==userData["telefone"]){
       await updateDoc(userDocRef, {
         "bairro": neighbourhood,
         "nome": name, 
@@ -152,16 +175,31 @@ export default function Perfil() {
         "rua": street,
         "telefone": telefone,
       });
-    }
 
-    const docSnapUser = await getDoc(userDocRef);
-    if (docSnapUser.exists()) {
-      setUserData(docSnapUser.data());
+      const docSnapUser = await getDoc(userDocRef);
+      if (docSnapUser.exists()) {
+        setUserData(docSnapUser.data());
+      }
     }
-
-    Alert.alert(imageDownloadUrl);
 
     setEdit(false);
+  }
+
+
+  const handleExit = () => {
+    /*
+    setUserData({})
+    setUserType("");
+    setUId("");
+    navigation.navigate("Login")
+    */
+    navigation.reset({
+        index: 0,
+        routes: [
+          { name: 'Login' },
+        ],
+      }
+    );
   }
 
 
@@ -184,7 +222,7 @@ export default function Perfil() {
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={handleExit}>
               <Text style={styles.buttonText}>SAIR</Text>
             </TouchableOpacity>
 
@@ -222,7 +260,7 @@ export default function Perfil() {
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={handleExit}>
               <Text style={styles.buttonText}>SAIR</Text>
             </TouchableOpacity>
 

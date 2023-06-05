@@ -17,15 +17,11 @@ import app from './config/firebase';
 import { getFirestore, collection, doc, setDoc, getDoc } from 'firebase/firestore';
 const db = getFirestore(app);
 
-//navigator
-const Stack = createStackNavigator();
-
-
-
 const App = () => {
   const [userData, setUserData] = useState({});
   const [userType, setUserType] = useState("");
   const [userId, setUserId] = useState("");
+  const Stack = createStackNavigator();
 
   const getData = async () => {
     const docRef = doc(db, "clientes", "teste");
@@ -45,8 +41,9 @@ const App = () => {
 
  
   return (
-    <NavigationContainer>
-      <Context.Provider value={{data: [userData, setUserData], type: [userType, setUserType], id: [userId, setUserId]}}>
+
+    <Context.Provider value={{data: [userData, setUserData], type: [userType, setUserType], id: [userId, setUserId]}}>
+      <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Menu" component={Menu} />
@@ -55,8 +52,8 @@ const App = () => {
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Perfil" component={Perfil} />
         </Stack.Navigator>
-      </Context.Provider>
-    </NavigationContainer>
+      </NavigationContainer>
+    </Context.Provider>
   ); 
 };
 

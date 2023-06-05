@@ -92,7 +92,7 @@ export default function Menu() {
 
 
   //???
-  navigation.addListener('beforeRemove', (e) => e.preventDefault());
+  //navigation.addListener('beforeRemove', (e) => e.preventDefault());
   console.log("userType: ", userType);
 
   if(userType === "clientes"){
