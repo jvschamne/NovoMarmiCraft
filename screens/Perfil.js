@@ -1,34 +1,38 @@
-import { StyleSheet, Text, View, TextInput, StatusBar, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Alert, TextInput, StatusBar, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useState, useContext } from 'react';
 import BottomTabNav from '../components/BottomTabNav';
 import {launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus, MediaTypeOptions} from 'expo-image-picker';
 import Context from '../Context';
-import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, getCollection } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { getDownloadURL, deleteObject, listAll, getStorage, uploadBytes, ref } from 'firebase/storage';
 import app from '../config/firebase';
 import PlateCard from '../components/PlateCard';
+import exampleImage from '../assets/profile-icon.png';
+const exampleImageUri = Image.resolveAssetSource(exampleImage).uri;
 
 
 export default function Perfil() {
   const db = getFirestore(app);
-  const storage = getStorage();
+  const storage = getStorage(app);
   
+  const [userData, setUserData] = useContext(Context).data;
   const userType = useContext(Context).type[0];
   const uId = useContext(Context).id[0];
 
+  const initialImageUri = (userData["imageDownloadUrl"]) ? userData["imageDownloadUrl"] : exampleImageUri;
   const [edit, setEdit] = useState(false);
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState(initialImageUri);
 
-  const [userData, setUserData] = useContext(Context).data;
   const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
   console.log("TELA PERFIL - userType: ", userType);
 
   const [name, setName] = useState(userData["nome"]);
-  const [email, setEmail] = useState(userData["e-mail"]);
+  //const [email, setEmail] = useState(userData["e-mail"]);
   const [neighbourhood, setNeighbourhood] = useState(userData["bairro"]);
   const [street, setStreet] = useState(userData["rua"]);
   const [number, setNumber] = useState(userData["numero"]);
   const [telefone, setTelefone] = useState(userData["telefone"]);
+  const [imageDownloadUrl, setImageDownloadUrl] = (userData["imageDownloadUrl"]) ? useState(userData["imageDownloadUrl"]) : useState("");
 
   
 
@@ -48,18 +52,6 @@ export default function Perfil() {
     return true;
   }
 
-  const checkMenu = async () => {
-    const colRef = collection(db, "menu "+userData["nome"]);
-    const colSnap = await getCollection(colRef);
-
-    if(colSnap.exists()){
-      console.log("Document data:", colSnap.data());
-    }
-    else{
-      console.log("No such document!");
-    }
-  }
-
 
   const takePhoto = async () => {
     const hasPermission = await verifyPermission();
@@ -72,12 +64,14 @@ export default function Perfil() {
     const result = await launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.1,
     });
 
     console.log(result);
 
-    setImage(result.assets[0].uri);
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
   };
   
 
@@ -87,7 +81,7 @@ export default function Perfil() {
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.1,
     });
 
     console.log(result);
@@ -98,29 +92,74 @@ export default function Perfil() {
   };
 
 
+  const uploadImage = async() => {
+    console.log("uploading image...");
+ 
+    const imageName = uId+".jpg";
+    const imageRef = ref(storage, imageName);
+
+    const response = await fetch(image);
+    let blobFile = await response.blob();
+    let file = new File([blobFile], imageName, {
+      type: "image/jpeg",
+    });
+
+    
+    uploadBytes(imageRef, file)
+      .then(() => {
+        getDownloadURL(imageRef).
+          then((url) => {
+            setImageDownloadUrl(url);
+          })
+          .catch((error) => {
+            console.log(error.message, "error getting image url");
+          });
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+
+    file = null;
+    blobFile = null;
+    
+  }
+
+
   // Salva mudanças feitas pelo usuário ao seu perfil
   const saveChanges = async () => {
     const userDocRef = doc(db, userType, uId);
 
-    /* TODO
-    if(image!==null){
-      
+    
+    if(image !== exampleImageUri){
+      uploadImage();
     }
-    */
 
-    await updateDoc(userDocRef, {
-      "bairro": neighbourhood,
-      "nome": name, 
-      "numero": number,
-      "rua": street,
-      "telefone": telefone,
-      "image": image
-    });
+    if(!userData["imageDownloadUrl"]){
+      await updateDoc(userDocRef, {
+        "bairro": neighbourhood,
+        "nome": name, 
+        "numero": number,
+        "rua": street,
+        "telefone": telefone,
+        "imageDownloadUrl": imageDownloadUrl,
+      });
+    }
+    else{
+      await updateDoc(userDocRef, {
+        "bairro": neighbourhood,
+        "nome": name, 
+        "numero": number,
+        "rua": street,
+        "telefone": telefone,
+      });
+    }
 
     const docSnapUser = await getDoc(userDocRef);
     if (docSnapUser.exists()) {
       setUserData(docSnapUser.data());
     }
+
+    Alert.alert(imageDownloadUrl);
 
     setEdit(false);
   }
@@ -135,14 +174,18 @@ export default function Perfil() {
           <ScrollView style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
             <Text style={styles.title}>{userData["nome"]}</Text>
 
-            <Image source={require('../assets/profile-icon.png')} style={styles.image} />
+            <Image source={{ uri: image }} style={styles.image} />
 
             <Text style={styles.normalText}>{userData["bairro"]}</Text>
             <Text style={styles.normalText}>{userData["rua"]}, {userData["numero"]}</Text>
             <Text style={styles.normalText}>{userData["telefone"]}</Text>
 
-            <TouchableOpacity style={styles.button} onPress={() => setEdit(true)}>
+            <TouchableOpacity style={styles.editButton} onPress={() => setEdit(true)}>
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>SAIR</Text>
             </TouchableOpacity>
 
           </ScrollView>
@@ -161,7 +204,7 @@ export default function Perfil() {
           <ScrollView style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
             <Text style={styles.title}>{userData["nome"]}</Text>
 
-            <Image source={require('../assets/profile-icon.png')} style={styles.image} />
+            <Image source={{ uri: image }} style={styles.image} />
 
             <Text style={styles.normalText}>{userData["bairro"]}</Text>
             <Text style={styles.normalText}>{userData["rua"]}, {userData["numero"]}</Text>
@@ -175,8 +218,12 @@ export default function Perfil() {
 
             </View>
 
-            <TouchableOpacity style={styles.button} onPress={() => setEdit(true)}>
+            <TouchableOpacity style={styles.editButton} onPress={() => setEdit(true)}>
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>SAIR</Text>
             </TouchableOpacity>
 
           </ScrollView>
@@ -350,6 +397,16 @@ const styles = StyleSheet.create({
       backgroundColor: 'white',
       borderRadius: 2000
     }, 
+    editButton: {
+      backgroundColor: 'black',
+      padding: 15,
+      width: 200,
+      justifyContent: 'center', 
+      alignItems:'center',
+      alignSelf:'center',
+      borderRadius: 30,
+      marginTop: 32,
+    },
     button: {
       backgroundColor: 'black',
       padding: 15,
