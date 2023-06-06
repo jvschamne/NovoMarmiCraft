@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   restaurantName: {
-    marginTop: 10,
+    marginTop: 20,
     fontSize: 30,
     fontWeight: 'bold'
   },
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   logo: {
     marginTop: 10,
     width: 150,
-    height: 150
+    height: 150,
   },
   scrollViewContent: {
     flexGrow: 1,

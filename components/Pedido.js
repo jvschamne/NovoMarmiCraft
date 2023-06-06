@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from 'react-native';
 
-const Pedido = ({ info }) => {
+const Pedido = ({ info, type }) => {
   const [status, setStatus] = useState(info[1]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -17,24 +17,30 @@ const Pedido = ({ info }) => {
 
 
 
-  const statusOptions = ['Em processamento', 'Enviado', 'Entregue'];
+  const statusRestaurante = ['Em processamento', 'Enviado', 'Entregue'];
+  const statusEntregador = ['Levando ao cliente', 'Concluído']
 
   return (
     <View style={styles.pedido}>
-      <TouchableOpacity onPress={handleClick}>
+      
         <View style={styles.secao1}>
+          <TouchableOpacity onPress={handleClick} style={styles.pedidoStatus}>
+            <Text>{status}</Text>
+          </TouchableOpacity>
           <Text style={styles.pedidoText}>{"Pedido: " + info[0]}</Text>
-          <Text style={styles.pedidoStatus}>{status}</Text>
+          <Text style={styles.pedidoText}>{"Preço: " + info[3]}</Text>
+          <Text style={styles.pedidoText}>{"Endereço: " + info[2]}</Text>
         </View>
-      </TouchableOpacity>
+      
 
-      <Text style={styles.pedidoText}>{"Endereço: " + info[2]}</Text>
+      
 
       <Modal visible={modalVisible} animationType="fade" transparent>
         <View style={styles.modalContainer}>
-          <FlatList
+          {type === "restaurante" &&
+            <FlatList
             style={styles.flatList}
-            data={statusOptions}
+            data={statusRestaurante}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
               <TouchableOpacity
@@ -44,7 +50,21 @@ const Pedido = ({ info }) => {
                 <Text>{item}</Text>
               </TouchableOpacity>
             )}
-          />
+          />}
+          {type === "entregador" &&
+            <FlatList
+            style={styles.flatList}
+            data={statusEntregador}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.statusOption}
+                onPress={() => handleStatusSelect(item)}
+              >
+                <Text>{item}</Text>
+              </TouchableOpacity>
+            )}
+          />}
          
         </View>
       </Modal>
@@ -57,7 +77,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     margin: 10,
     width: '90%',
-    height: '20%',
+    height: 200,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
@@ -70,10 +90,11 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 10,
     margin: 10,
-    marginLeft: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   secao1: {
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
   modalContainer: {
     display: 'flex',
