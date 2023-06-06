@@ -1,10 +1,17 @@
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
 import BottomTabNav from '../components/BottomTabNav';
 import OptionCard from '../components/OptionCard';
+import PedidoCliente from '../components/PedidoCliente';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Carrinho(props) {
 
 
+    const navigation = useNavigation();
+
+    const handleBuyButton = () => {
+        navigation.navigate('Perfil')
+    }
 
     const pedidoTemporario = [
         ["X-Burguer", "R$22,90"], 
@@ -18,13 +25,13 @@ export default function Carrinho(props) {
             <Text style={styles.title}>Seu pedido</Text> 
             <ScrollView contentContainerStyle={styles.scrollViewContent} style={{marginBottom: 300}}>
                     {pedidoTemporario.length != 0 &&
-                        pedidoTemporario.map((opcao, i) => <OptionCard key={i} name={opcao[0]} price={opcao[1]}/>)
+                        pedidoTemporario.map((opcao, i) => <PedidoCliente key={i} name={opcao[0]} price={opcao[1]}/>)
                     }
             </ScrollView>
             
             <View style={styles.pagamento}>
                 <Text style={{fontSize: 20, marginBottom: 30}}>Total a pagar: R$43,99</Text>
-                <TouchableOpacity style={styles.checkoutButton}>
+                <TouchableOpacity style={styles.checkoutButton} onPress={handleBuyButton}>
                     <Text style={styles.textButton}>Finalizar pedido</Text>
                 </TouchableOpacity>
             </View>

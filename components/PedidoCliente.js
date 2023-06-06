@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function OptionCard ({name, price}) {
+export default function PedidoCliente ({name, price}) {
 
     const navigation = useNavigation();
 
-    const handleAddButton = () => {
+    const handleRemoveButton = () => {
         console.log('ok')
-        navigation.navigate('Carrinho')
+        
     };
     
 
@@ -15,17 +15,16 @@ export default function OptionCard ({name, price}) {
         <TouchableOpacity style={styles.card}>
             <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png'}} style={{ width: 70, height: 70}}/>
             <View style={styles.itemInfo}>
-                <Text style={{ marginBottom: 10, fontWeight: 'bold'}}>
+                <Text style={{ marginBottom: 10}}>
                     {name}
                 </Text>
                 <Text>
                     {price}
                 </Text>
             </View>
-            
-            <TouchableOpacity style={styles.addButton} onPress={handleAddButton}>
+            <TouchableOpacity style={styles.removeButton} onPress={handleRemoveButton}>
                 <Text style={{fontWeight: 'bold', fontSize: 20}}>
-                   +
+                   -
                 </Text>
             </TouchableOpacity>
         </TouchableOpacity>
@@ -46,7 +45,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginBottom: 25
     },
-    addButton: {
+    removeButton: {
         color: 'white',
         height: 50,
         width: 50,

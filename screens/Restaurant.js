@@ -19,14 +19,13 @@ export default function Restaurant(props) {
   return(
     <View style={styles.container}>
       <View style={styles.container2}>
+        <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png' }} style={styles.logo}></Image>
         <Text style={styles.restaurantName}>{restaurantData["nome"]}</Text>
-        <Text style={styles.address}>{restaurantData["bairro"]}</Text>
-        <Text style={styles.address}>{restaurantData["rua"]}</Text>
-        <Text style={styles.address}>{restaurantData["numero"]}</Text>
-        <Text style={{fontSize: 20, marginTop: 15}}>1,5Km - Aberto</Text>
+        <Text style={styles.address}>{restaurantData["bairro"]}, {restaurantData["rua"]}, {restaurantData["numero"]}</Text>
+        <Text style={{fontSize: 15, marginTop: 15}}>1,5Km - Aberto</Text>
       </View>
-      <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png' }} style={styles.logo}></Image>
-      <Text style={{fontSize: 30, marginBottom: 35}}>Cardápio</Text>
+      
+      <Text style={{fontSize: 25, marginBottom: 25, marginTop: 25}}>Cardápio</Text>
       
       <ScrollView contentContainerStyle={styles.scrollViewContent} style={{marginBottom: 100}}>
         {opcoes.length != 0 &&
@@ -55,15 +54,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   restaurantName: {
-    marginTop: 40,
+    marginTop: 10,
     fontSize: 30,
     fontWeight: 'bold'
   },
   address: {
     fontSize: 20, 
-    marginTop: 5
+    marginTop: 10
   },
   logo: {
+    marginTop: 10,
     width: 150,
     height: 150
   },

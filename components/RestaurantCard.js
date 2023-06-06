@@ -16,7 +16,7 @@ export default function RestaurantCard ({data}) {
         <TouchableOpacity style={styles.card} onPress={handleLogin}>
             <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png'}} style={styles.image}/>
             <View styles={styles.info}>
-                <Text style={{ marginLeft: 30}}>
+                <Text style={{ marginLeft: 30, fontWeight: 'bold'}}>
                     {dados["nome"]}
                 </Text>
                
@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         borderWidth: 1,
         marginBottom: 25,
+        padding: 20,
     },
     info: {
         flexDirection: 'column',
