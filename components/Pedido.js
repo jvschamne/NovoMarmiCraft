@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from 'react-native';
 
 const Pedido = ({ info, type }) => {
   const [status, setStatus] = useState(info[1]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [statusColor, setStatusColor] = useState(styles.blueBackground)
 
   const handleClick = () => {
     setModalVisible(true);
@@ -12,20 +13,31 @@ const Pedido = ({ info, type }) => {
 
   const handleStatusSelect = (newStatus) => {
     setStatus(newStatus);
+    
     setModalVisible(false);
   };
 
+  
+  
 
 
-  const statusRestaurante = ['Em processamento', 'Enviado', 'Entregue'];
-  const statusEntregador = ['Levando ao cliente', 'Concluído']
+  const statusRestaurante = ['Aguardando entregador', 'Entregando', 'Preparando', 'Concluído'];
+  const statusEntregador = ['Entregando', 'Concluído']
+
+  useEffect(() => {
+    if(status === 'Concluído') setStatusColor(styles.greenBackground)
+    if(status === 'Preparando') setStatusColor(styles.redBackground)
+    if(status === 'Entregando') setStatusColor(styles.blueBackground)
+    if(status === 'Aguardando entregador') setStatusColor(styles.yellowBackground)
+  }, [status])
+  
 
   return (
     <View style={styles.pedido}>
       
         <View style={styles.secao1}>
-          <TouchableOpacity onPress={handleClick} style={styles.pedidoStatus}>
-            <Text>{status}</Text>
+          <TouchableOpacity onPress={handleClick} style={[styles.pedidoStatus, statusColor]}>
+            <Text style={{color: 'white', fontWeight: 'bold'}}>{status}</Text>
           </TouchableOpacity>
           <Text style={styles.pedidoText}>{"Pedido: " + info[0]}</Text>
           <Text style={styles.pedidoText}>{"Preço: " + info[3]}</Text>
@@ -53,7 +65,8 @@ const Pedido = ({ info, type }) => {
           />}
           {type === "entregador" &&
             <FlatList
-            style={styles.flatList}
+          
+            contentContainerStyle={styles.flatList}
             data={statusEntregador}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
@@ -61,7 +74,7 @@ const Pedido = ({ info, type }) => {
                 style={styles.statusOption}
                 onPress={() => handleStatusSelect(item)}
               >
-                <Text>{item}</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 30}}>{item}</Text>
               </TouchableOpacity>
             )}
           />}
@@ -109,12 +122,29 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   flatList: {
-    backgroundColor: 'rgba(112, 196, 82, 0.8)',
+    backgroundColor: 'white',
     borderRadius: 25,
     borderColor: 'black',
     borderWidth: 2,
-    padding: 10
+    padding: 10,
+    height: 200,
+    flexDirection: 'column',justifyContent: 'center',
+    alignItems: 'center', // Centraliza os itens verticalmente
+  },
+  greenBackground: {
+    backgroundColor: 'green'
+  },
+  blueBackground: {
+    backgroundColor: 'blue'
+  },
+  redBackground: {
+    backgroundColor: 'red'
+  },
+  yellowBackground: {
+    backgroundColor: 'purple'
   }
+
+
 });
 
 export default Pedido;

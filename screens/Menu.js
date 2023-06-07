@@ -22,20 +22,20 @@ export default function Menu() {
     ["X-Burguer", "Preparando", "Rua Jair Bolsonaro", "R$20,97"],
     ["X-Bacon", "Entregando", "Rua Patriotas", "R$20,97"],
     ["Pizza Calabresa", "Concluído", "Rua Paulo Kogos", "R$20,97"],
-    ["Churros", "Aguardando Entregador", "Rua ChurrosBangus", "R$20,97"],
-    ["Churros", "Aguardando Entregador", "Rua ChurrosBangus", "R$20,97"],
-    ["Churros", "Aguardando Entregador", "Rua ChurrosBangus", "R$20,97"],
+    ["Churros", "Aguardando entregador", "Rua ChurrosBangus", "R$20,97"],
+    ["Churros", "Aguardando entregador", "Rua ChurrosBangus", "R$20,97"],
+    ["Churros", "Aguardando entregador", "Rua ChurrosBangus", "R$20,97"],
     ["Pizza Calabresa", "Concluído", "Rua Putaria", "R$20,97"],
-    ["Churros", "Aguardando Entregador", "Rua ChurrosBangus", "R$20,97"],
+    ["Churros", "Aguardando entregador", "Rua ChurrosBangus", "R$20,97"],
   ];
 
   const pedidosEntregador = [
-    ["X-Burguer", "Levando ao cliente", "Rua Jair Bolsonaro", "R$20,97"],
+    ["X-Burguer", "Entregando", "Rua Jair Bolsonaro", "R$20,97"],
     ["X-Bacon", "Concluído", "Rua Patriotas", "R$20,97"],
     ["Pizza Calabresa", "Concluído", "Rua Paulo Kogos", "R$20,97"],
-    ["Churros", "Concluído Entregador", "Rua ChurrosBangus", "R$20,97"],
-    ["Churros", "Levando ao cliente", "Rua ChurrosBangus", "R$20,97"],
-    ["Churros", "Levando ao cliente", "Rua ChurrosBangus", "R$20,97"],
+    ["Churros", "Concluído", "Rua ChurrosBangus", "R$20,97"],
+    ["Churros", "Entregando", "Rua ChurrosBangus", "R$20,97"],
+    ["Churros", "Entregando", "Rua ChurrosBangus", "R$20,97"],
     ["Pizza Calabresa", "Concluído", "Rua Putaria", "R$20,97"],
   ]
 
