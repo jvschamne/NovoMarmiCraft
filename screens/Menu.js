@@ -100,7 +100,11 @@ export default function Menu() {
   console.log("RESTAURANTS DATA: ", restaurantsData);
   console.log("length: ", restaurantsData.length !== 0);
 
-  navigation.addListener('beforeRemove', (e) => e.preventDefault());
+  //console.log(restaurantData[0]["nome"]);
+
+
+  //???
+  //navigation.addListener('beforeRemove', (e) => e.preventDefault());
   console.log("userType: ", userType);
 
   if (userType === "clientes") {
