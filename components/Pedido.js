@@ -51,7 +51,7 @@ const Pedido = ({ info, type }) => {
         <View style={styles.modalContainer}>
           {type === "restaurante" &&
             <FlatList
-            style={styles.flatList}
+            contentContainerStyle={styles.flatList}
             data={statusRestaurante}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
@@ -128,7 +128,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     padding: 10,
     height: 200,
-    flexDirection: 'column',justifyContent: 'center',
+    flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center', // Centraliza os itens verticalmente
   },
   greenBackground: {
