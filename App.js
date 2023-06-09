@@ -25,22 +25,6 @@ const App = () => {
   const [userId, setUserId] = useState("");
   const Stack = createStackNavigator();
 
-  const getData = async () => {
-    const docRef = doc(db, "clientes", "teste");
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
-    } else {
-      // docSnap.data() will be undefined in this case
-      console.log("No such document!");
-    }
-  }
-
-  useEffect(() => {
-    getData()    
-  });
-
  
   return (
 
