@@ -4,7 +4,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from 'react
 const Pedido = ({ info, type }) => {
   const [status, setStatus] = useState(info[1]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState('');
   const [statusColor, setStatusColor] = useState(styles.blueBackground)
 
   const handleClick = () => {
@@ -17,11 +16,8 @@ const Pedido = ({ info, type }) => {
     setModalVisible(false);
   };
 
-  
-  
 
-
-  const statusRestaurante = ['Aguardando entregador', 'Entregando', 'Preparando', 'Concluído'];
+  const statusRestaurante = ['Aguardando entregador', 'Preparando', 'Entregando', 'Concluído'];
   const statusEntregador = ['Entregando', 'Concluído']
 
   useEffect(() => {

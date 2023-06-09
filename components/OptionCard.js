@@ -42,9 +42,9 @@ const styles = StyleSheet.create({
         height: 100,
         width: '90%',
         borderRadius: 25,
-        borderColor: 'black',
-        borderWidth: 1,
-        marginBottom: 25
+        marginBottom: 25,
+        elevation: 5,
+        shadowColor: 'black',
     },
     addButton: {
         color: 'white',
