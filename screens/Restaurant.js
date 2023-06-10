@@ -5,8 +5,10 @@ import OptionCard from '../components/OptionCard';
 import { TouchableOpacity } from 'react-native';
 
 export default function Restaurant(props) {
-  const restaurantData = props.route.params;
+
+  const restaurantData = props.route.params
   console.log("RESTAURANT SCREEN: ", restaurantData);
+  
   const navigation = useNavigation();
 
 

@@ -78,6 +78,7 @@ export default function Menu() {
     getRestaurantData();
   };
 
+  /*
   const getRestaurantData = async () => {
     const q = query(collection(db, "restaurantes"));
     const querySnapshot = await getDocs(q);
@@ -85,12 +86,57 @@ export default function Menu() {
 
     querySnapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
+      
       console.log(doc.id, " => ", doc.data());
-      restaurants.push(doc.data());
+      // Crie um objeto com o ID e os dados do restaurante
+      const restaurant = {
+        id: doc.id,
+        data: doc.data()
+      };
+      
+      // Adicione o objeto ao array de restaurantes
+      restaurants.push(restaurant);
     });
 
     setRestaurantsData(restaurants);
+
+    console.log("")
+    restaurants.forEach((rest) => {
+      console.log("Rest:", rest)
+    })
+  };*/
+
+  const getRestaurantData = async () => {
+    const q = query(collection(db, "restaurantes"));
+    const querySnapshot = await getDocs(q);
+    let restaurants = [];
+  
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      console.log(doc.id, " => ", doc.data());
+      
+      // Crie uma variável "data" e insira o doc.data()
+      const data = doc.data();
+      
+      // Insira o ID no objeto "data"
+      data.id = doc.id;
+      
+      // Adicione o objeto "data" ao array de restaurantes
+      restaurants.push(data);
+    });
+  
+    setRestaurantsData(restaurants);
+  
+    console.log("");
+    restaurants.forEach((rest) => {
+      console.log("Rest:", rest);
+    });
   };
+
+
+
+
+
 
   useEffect(() => {
     getUserType();

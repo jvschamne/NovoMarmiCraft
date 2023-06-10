@@ -2,13 +2,16 @@ import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function RestaurantCard ({data}) {
+    const restId = data["id"]
     const dados = data;
     console.log("--- RESTAURANT CARD: ", dados["nome"], " ----");
+    console.log("Dados restaurante:", data)
+    console.log("ID restaurante:", restId)
+
     const navigation = useNavigation();
 
     const handleLogin = () => {
-        console.log('ok')
-        navigation.navigate('Restaurant', dados);
+        navigation.navigate('Restaurant', data);
     };
     
 

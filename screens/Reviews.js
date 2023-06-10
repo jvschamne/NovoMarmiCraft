@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import { getFirestore, collection, doc, addDoc, getDocs, query, where, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, addDoc, getDoc, getDocs, query, where, setDoc } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid'; // Biblioteca para gerar IDs únicos
 import BottomTabNav from '../components/BottomTabNav';
 import app from '../config/firebase';
@@ -8,97 +8,23 @@ import Context from '../Context';
 
 export default function Reviews(props) {
   const restaurantData = props.route.params;
-  //console.log("Reviews SCREEN: ", restaurantData);
 
   const [newReview, setNewReview] = useState('');
-  const [reviews, setReviews] = useState()
+  const [reviews, setReviews] = useState('')
   const db = getFirestore(app);
-  
-  const [userData, setUserData] = useContext(Context).data;
   const [uId, setUId] = useContext(Context).id;
 
-/*
+
   const handleAddReview = async () => {
-    console.log('-------------ETAPA 1')
-    console.log(restaurantData)
-
-
-    // Crie um novo documento na subcoleção "avaliacoes" do restaurante
-    db.collection('restaurantes').doc(restauranteID).collection('avaliacoes').add({
-        clienteID: clienteID,
-        restauranteID: restauranteID,
-        comentario: comentario,
-        classificacao: classificacao
-      })
-      .then(() => {
-        console.log('Avaliação adicionada com sucesso!');
-        // Limpe os campos de comentário e classificação após adicionar a avaliação
-        setComentario('');
-        setClassificacao(0);
-      })
-      .catch(error => {
-        console.error('Erro ao adicionar avaliação:', error);
-      });
-
-
-    /*
-    const avaliacoesRef = collection(db, 'avaliacoes');
-    console.log('-------------ETAPA 2')
-    const clienteRef = doc(db, 'clientes', uId);
-    console.log('-------------ETAPA 3')
-
-    console.log(restaurantData)
-
-    const restauranteRef = doc(db, 'restaurantes', "3YWSpZaNyISuFzMOk7fhhlUgU0a2");
-    console.log('-------------ETAPA 4')
-    
-
-
-
-
-    /*const newReviewDoc = await setDoc(collection(db, 'avaliacoes'), {
-        id: uuidv4(), // ID único para a avaliação
-        clienteId: "Douglas Lanches",//uId, // ID do cliente (usuário autenticado)
-        restauranteId: restaurantData["nome"], // ID do restaurante
-        comentario: "putaira",
-        estrelas: 5, // Exemplo: avaliação com 5 estrelas
-    });
-
-
-    /*await setDoc(avaliacoesRef, {"comentario": "Horrível",
-        "estrelas": 2, 
-        /*"cliente": uId,
-        
-        "restaurante": "3YWSpZaNyISuFzMOk7fhhlUgU0a2"*/
-    //});
-
-    /*
     console.log('-------------ETAPA 5')
-     
-    // Lógica para adicionar o novo comentário/review
-    console.log('Novo review:', newReview);
-    // Limpar o campo de input
-    setNewReview('');
-
-  };*/
-  const handleAddReview = async () => {
-    console.log('-------------ETAPA 1')
-    const avaliacoesRef = collection(db, 'restaurantes', "3YWSpZaNyISuFzMOk7fhhlUgU0a2", 'avaliacoes');
-    console.log('-------------ETAPA 2')
-    const newReviewId = uuidv4(); // Gerar um ID único para a avaliação
-
-    console.log("PUTARIA:", avaliacoesRef)
-    console.log("PUTARIA:", restaurantData)
-
-
-    console.log('-------------ETAPA 3')
+    const avaliacoesRef = collection(db, 'restaurantes', restaurantData["id"], 'avaliacoes');
+    
+    console.log('-------------ETAPA 6')
     // Crie um novo documento na subcoleção "avaliacoes" do restaurante
     await addDoc(avaliacoesRef, {
-      id: newReviewId,
       clienteId: uId,
-      restauranteId: "3YWSpZaNyISuFzMOk7fhhlUgU0a2",
       comentario: newReview,
-      classificacao: 0 // Defina a classificação inicial como 0 ou use um campo separado para atualizar a classificação posteriormente
+      classificacao: 0
     });
 
     console.log('Avaliação adicionada com sucesso!');
@@ -106,14 +32,51 @@ export default function Reviews(props) {
     setNewReview('');
   };
 
+  const getReviewsData = async () => {
+
+    const q = query(collection(db, 'restaurantes', restaurantData["id"], 'avaliacoes'));
+
+    const querySnapshot = await getDocs(q);
+    let auxReviews = [];
+  
+
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      //console.log(doc.id, " => ", doc.data());
+      
+      // Crie uma variável "data" e insira o doc.data()
+      const data = doc.data();
+      
+      // Insira o ID no objeto "data"
+      data.id = doc.id;
+      
+      // Adicione o objeto "data" ao array de reviews
+      auxReviews.push(data);
+    });
+
+    setReviews(auxReviews);
+  };
+
+
+  useEffect(() => {
+    getReviewsData()
+  }, [newReview])
+
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Reviews</Text>
       <View style={styles.reviews}>
-        <Text>Review</Text>
-        <Text>Review</Text>
-        <Text>Review 3</Text>
+            {reviews.length !== 0 &&
+        reviews.map((avaliacao) => {
+          return (
+            <View style={styles.review}>
+              <Text>{avaliacao["comentario"]}</Text>
+            </View>
+            
+          );
+        })
+      }
       </View>
       <View style={styles.addReviewContainer}>
         <TextInput
@@ -145,7 +108,7 @@ const styles = StyleSheet.create({
   reviews: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#fcc40d',
     width: '95%',
     marginTop: 50,
   },
@@ -175,4 +138,12 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 16,
   },
+  review: {
+    backgroundColor: 'white',
+    marginTop: 20,
+    width: '95%',
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
