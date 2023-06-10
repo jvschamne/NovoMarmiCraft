@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, BackHandler, Alert } from 'react-native';
 import RestaurantCard from '../components/RestaurantCard';
 import BottomTabNav from '../components/BottomTabNav';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { getFirestore, collection, doc, setDoc, getDoc, query, getDocs } from 'firebase/firestore';
 import app from '../config/firebase';
 import Context from './../Context';

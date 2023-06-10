@@ -32,9 +32,11 @@ export default function Perfil() {
 
   const [name, setName] = useState(userData["nome"]);
   //const [email, setEmail] = useState(userData["e-mail"]);
+
   const [neighbourhood, setNeighbourhood] = useState(userData["bairro"]);
   const [street, setStreet] = useState(userData["rua"]);
   const [number, setNumber] = useState(userData["numero"]);
+  const [pix, setPix] = useState(userData["chave PIX"]);
   const [telefone, setTelefone] = useState(userData["telefone"]);
   const [imageDownloadUrl, setImageDownloadUrl] = (userData["imageDownloadUrl"]) ? useState(userData["imageDownloadUrl"]) : useState("");
 
@@ -95,7 +97,7 @@ export default function Perfil() {
     const result = await launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0,
+      quality: 0.1,
     });
 
     console.log(result);
@@ -112,7 +114,7 @@ export default function Perfil() {
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0,
+      quality: 0.1,
     });
 
     console.log(result);
@@ -274,6 +276,34 @@ export default function Perfil() {
         </View>
       );
     }
+    else if(userType === "entregadores"){
+      return (
+        <View style={styles.container}>
+          <ScrollView style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
+            <Text style={styles.title}>{userData["nome"]}</Text>
+
+            <Image source={{ uri: image }} style={styles.image} />
+
+            <Text style={styles.normalText}>{userData["telefone"]}</Text>
+
+            <TouchableOpacity style={styles.editButton} onPress={() => setEdit(true)}>
+              <Text style={styles.buttonText}>EDITAR PERFIL</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={handleExit}>
+              <Text style={styles.buttonText}>SAIR</Text>
+            </TouchableOpacity>
+
+          </ScrollView>
+
+
+    
+          <StatusBar style="auto" />
+          <BottomTabNav></BottomTabNav>
+
+        </View>
+      );
+    }
   }
 
   // Caso esteja no modo de edição
@@ -372,6 +402,53 @@ export default function Perfil() {
         </View>
       );
     }
+    else if(userType === "entregadores"){
+      return (
+        <View style={styles.container}>
+          <ScrollView style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
+            <Image source={{ uri: image }} style={styles.image} />
+
+            <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
+              <Text>Tirar foto</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.galleryButton} onPress={pickImage}>
+              <Text>Galeria</Text>
+            </TouchableOpacity>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Nome"
+              onChangeText={text => setName(text)}
+              value={name}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Chave PIX"
+              onChangeText={text => setPix(text)}
+              value={pix}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Telefone (DD XXXXX-XXXX) "
+              onChangeText={text => setTelefone(text)}
+              value={telefone}
+            />
+
+            <TouchableOpacity style={styles.button} onPress={saveChanges}>
+              <Text style={styles.buttonText}>SALVAR</Text>
+            </TouchableOpacity>
+          
+          </ScrollView>
+
+
+          <StatusBar style="auto" />
+          <BottomTabNav style={styles.bottomBar}></BottomTabNav>
+          
+        </View>
+      );
+    }
+    
   }
 
 

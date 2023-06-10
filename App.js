@@ -24,7 +24,6 @@ const App = () => {
   const [userType, setUserType] = useState("");
   const [userId, setUserId] = useState("");
   const Stack = createStackNavigator();
-
  
   return (
 
@@ -33,7 +32,7 @@ const App = () => {
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Carrinho" component={Carrinho} />
-          <Stack.Screen name="Menu" component={Menu} />
+          <Stack.Screen name="Menu" component={Menu}  options={{gestureEnabled: false}}/>
           <Stack.Screen name="Restaurant" component={Restaurant} />
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="Register" component={Register} />
