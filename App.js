@@ -9,6 +9,7 @@ import Register from './screens/Register';
 import Perfil from './screens/Perfil';
 import Carrinho from './screens/Carrinho';
 import Reviews from './screens/Reviews';
+import NewPlate from './screens/NewPlate';
 import { LogBox } from 'react-native';
 import Context from './Context';
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -17,6 +18,7 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 //firebase
 import app from './config/firebase';
 import { getFirestore, collection, doc, setDoc, getDoc } from 'firebase/firestore';
+
 const db = getFirestore(app);
 
 const App = () => {
@@ -38,6 +40,7 @@ const App = () => {
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Perfil" component={Perfil} />
           <Stack.Screen name="Reviews" component={Reviews} />
+          <Stack.Screen name="NewPlate" component={NewPlate} />
         </Stack.Navigator>
       </NavigationContainer>
     </Context.Provider>

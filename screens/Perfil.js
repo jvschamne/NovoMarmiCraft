@@ -9,6 +9,7 @@ import app from '../config/firebase';
 import PlateCard from '../components/PlateCard';
 import exampleImage from '../assets/profile-icon.png';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import PlatesList from '../components/PlatesList';
 const exampleImageUri = Image.resolveAssetSource(exampleImage).uri;
 
 
@@ -25,20 +26,20 @@ export default function Perfil() {
 
   
   const [edit, setEdit] = useState(false);
-  const initialImageUri = (userData["imageDownloadUrl"]) ? userData["imageDownloadUrl"] : exampleImageUri;
+  const initialImageUri = (userData.data["imageDownloadUrl"]) ? userData.data["imageDownloadUrl"] : exampleImageUri;
   const [image, setImage] = useState(initialImageUri);
 
   const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
 
-  const [name, setName] = useState(userData["nome"]);
+  const [name, setName] = useState(userData.data["nome"]);
   //const [email, setEmail] = useState(userData["e-mail"]);
 
-  const [neighbourhood, setNeighbourhood] = useState(userData["bairro"]);
-  const [street, setStreet] = useState(userData["rua"]);
-  const [number, setNumber] = useState(userData["numero"]);
-  const [pix, setPix] = useState(userData["chave PIX"]);
-  const [telefone, setTelefone] = useState(userData["telefone"]);
-  const [imageDownloadUrl, setImageDownloadUrl] = (userData["imageDownloadUrl"]) ? useState(userData["imageDownloadUrl"]) : useState("");
+  const [neighbourhood, setNeighbourhood] = useState(userData.data["bairro"]);
+  const [street, setStreet] = useState(userData.data["rua"]);
+  const [number, setNumber] = useState(userData.data["numero"]);
+  const [pix, setPix] = useState(userData.data["chave PIX"]);
+  const [telefone, setTelefone] = useState(userData.data["telefone"]);
+  const [imageDownloadUrl, setImageDownloadUrl] = (userData.data["imageDownloadUrl"]) ? useState(userData.data["imageDownloadUrl"]) : useState("");
 
   console.log("\n\n\n------TELA PERFIL------\nIMAGE DOWNLOAD URL: ", imageDownloadUrl);
   console.log("IMAGE URI: ", image);
@@ -48,14 +49,17 @@ export default function Perfil() {
   useEffect(() => {
     const updateImageData = async () => {
       console.log("USE EFFECT - IMAGE DOWNLOAD URL ALTERADO!!!")
-      if(!userData["imageDownloadUrl"] || (userData["imageDownloadUrl"] && imageDownloadUrl!=="")){
+      if(!userData.data["imageDownloadUrl"] || (userData.data["imageDownloadUrl"] && imageDownloadUrl!=="")){
         await updateDoc(userDocRef, {
           "imageDownloadUrl": imageDownloadUrl,
         });
   
         const docSnapUser = await getDoc(userDocRef);
         if (docSnapUser.exists()) {
-          setUserData(docSnapUser.data());
+          setUserData({
+            data: docSnapUser.data(),
+            id: userData.id
+          });
         }
 
       }
@@ -165,11 +169,11 @@ export default function Perfil() {
       await uploadImage();
     }
     
-    if(neighbourhood!==userData["bairro"] 
-    || name!==userData["nome"] 
-    || number!==userData["numero"] 
-    || street!==userData["rua"] 
-    || telefone!==userData["telefone"]){
+    if(neighbourhood!==userData.data["bairro"] 
+    || name!==userData.data["nome"] 
+    || number!==userData.data["numero"] 
+    || street!==userData.data["rua"] 
+    || telefone!==userData.data["telefone"]){
       await updateDoc(userDocRef, {
         "bairro": neighbourhood,
         "nome": name, 
@@ -180,7 +184,10 @@ export default function Perfil() {
 
       const docSnapUser = await getDoc(userDocRef);
       if (docSnapUser.exists()) {
-        setUserData(docSnapUser.data());
+        setUserData({
+          data: docSnapUser.data(),
+          id: userData.id
+        });
       }
     }
 
@@ -189,12 +196,6 @@ export default function Perfil() {
 
 
   const handleExit = () => {
-    /*
-    setUserData({})
-    setUserType("");
-    setUId("");
-    navigation.navigate("Login")
-    */
     navigation.reset({
         index: 0,
         routes: [
@@ -212,13 +213,13 @@ export default function Perfil() {
       return (
         <View style={styles.container}>
           <ScrollView style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
-            <Text style={styles.title}>{userData["nome"]}</Text>
+            <Text style={styles.title}>{userData.data["nome"]}</Text>
 
             <Image source={{ uri: image }} style={styles.image} />
 
-            <Text style={styles.normalText}>{userData["bairro"]}</Text>
-            <Text style={styles.normalText}>{userData["rua"]}, {userData["numero"]}</Text>
-            <Text style={styles.normalText}>{userData["telefone"]}</Text>
+            <Text style={styles.normalText}>{userData.data["bairro"]}</Text>
+            <Text style={styles.normalText}>{userData.data["rua"]}, {userData.data["numero"]}</Text>
+            <Text style={styles.normalText}>{userData.data["telefone"]}</Text>
 
             <TouchableOpacity style={styles.editButton} onPress={() => setEdit(true)}>
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
@@ -242,21 +243,15 @@ export default function Perfil() {
       return (
         <View style={styles.container}>
           <ScrollView style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
-            <Text style={styles.title}>{userData["nome"]}</Text>
+            <Text style={styles.title}>{userData.data["nome"]}</Text>
 
             <Image source={{ uri: image }} style={styles.image} />
 
-            <Text style={styles.normalText}>{userData["bairro"]}</Text>
-            <Text style={styles.normalText}>{userData["rua"]}, {userData["numero"]}</Text>
-            <Text style={styles.normalText}>{userData["telefone"]}</Text>
-
-            <View style={styles.menu}>
+            <Text style={styles.normalText}>{userData.data["bairro"]}</Text>
+            <Text style={styles.normalText}>{userData.data["rua"]}, {userData.data["numero"]}</Text>
+            <Text style={styles.normalText}>{userData.data["telefone"]}</Text>
               
-              <TouchableOpacity style={styles.menuItemButton}>
-                <PlateCard style={styles.menuItem} data={{"nome" : "prato"}}/>
-              </TouchableOpacity>
-
-            </View>
+            <PlatesList style={styles.plates}/>
 
             <TouchableOpacity style={styles.editButton} onPress={() => setEdit(true)}>
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
@@ -280,11 +275,11 @@ export default function Perfil() {
       return (
         <View style={styles.container}>
           <ScrollView style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
-            <Text style={styles.title}>{userData["nome"]}</Text>
+            <Text style={styles.title}>{userData.data["nome"]}</Text>
 
             <Image source={{ uri: image }} style={styles.image} />
 
-            <Text style={styles.normalText}>{userData["telefone"]}</Text>
+            <Text style={styles.normalText}>{userData.data["telefone"]}</Text>
 
             <TouchableOpacity style={styles.editButton} onPress={() => setEdit(true)}>
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
@@ -379,15 +374,8 @@ export default function Perfil() {
             <TouchableOpacity style={styles.galleryButton} onPress={pickImage}>
               <Text>Galeria</Text>
             </TouchableOpacity>
-
-            <View style={styles.menu}>
-              
-              <TouchableOpacity style={styles.menuItemButton}>
-                <PlateCard style={styles.menuItem} data={{"nome" : "prato"}} cardType="add"/>
-              </TouchableOpacity>
-
-            </View>
-
+            
+            <PlatesList style={styles.plates} type="edit"/>
 
             <TouchableOpacity style={styles.button} onPress={saveChanges}>
               <Text style={styles.buttonText}>SALVAR</Text>
@@ -462,6 +450,14 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: '#fcc40d',
     },
+    menu: {
+      flex: 1,
+      alignItems: "center",
+      width: "100%",
+      justifyContent: "flex-start",
+      backgroundColor: "lightgray",
+      paddingTop: 20,
+    },
     scrollView: {
       width: '100%',
     },
@@ -501,6 +497,11 @@ const styles = StyleSheet.create({
       justifyContent:'center',
       alignItems: 'center'
     },
+    plates: {
+      flex: 1,
+      width: '100%',
+      marginTop: 10,
+    },
     image: {
       alignSelf: 'center',
       padding: 130,
@@ -537,17 +538,6 @@ const styles = StyleSheet.create({
       color: '#fcc40d',
       fontWeight: 'bold',
       fontSize: 16,
-    },
-    menu: {
-      marginTop: 10,
-      paddingTop: 40,
-      paddingBottom: 40,
-      backgroundColor: 'gray',
-      width: '100%',
-    },
-    menuItemButton: {
-      width: '100%',
-      alignItems: 'center',
     },
     menuItem: {
       backgroundColor: 'white',

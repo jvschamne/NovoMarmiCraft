@@ -53,18 +53,21 @@ export default function Menu() {
 
     console.log("\n\n----- MENU SCREEN -----");
     if (docSnapClients.exists()) {
-      userData = docSnapClients.data();
-      console.log("INFO CLIENTE LOGADO:", userData);
+      userData.data = docSnapClients.data();
+      userData.id = docSnapClients.id;
+      console.log("INFO CLIENTE LOGADO:", userData, " - userData.id: ", userData.id);
       type = "clientes";
       console.log("MENU TYPE: " + type);
     } else if (docSnapRestaurants.exists()) {
-      userData = docSnapRestaurants.data();
-      console.log("INFO RESTAURANTE LOGADO:", userData);
+      userData.data = docSnapRestaurants.data();
+      userData.id = docSnapRestaurants.id;
+      console.log("INFO RESTAURANTE LOGADO:",  userData, " - userData.id: ", userData.id);
       type = "restaurantes";
       console.log("MENU TYPE: " + type);
     } else if (docSnapDelivery.exists()) {
-      userData = docSnapDelivery.data();
-      console.log("INFO ENTREGADOR LOGADO:", userData);
+      userData.data = docSnapDelivery.data();
+      userData.id = docSnapDelivery.id;
+      console.log("INFO ENTREGADOR LOGADO:",  userData, " - userData.id: ", userData.id);
       type = "entregadores";
       console.log("MENU TYPE: " + type);
     } else {
@@ -78,33 +81,7 @@ export default function Menu() {
     getRestaurantData();
   };
 
-  /*
-  const getRestaurantData = async () => {
-    const q = query(collection(db, "restaurantes"));
-    const querySnapshot = await getDocs(q);
-    let restaurants = [];
 
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      
-      console.log(doc.id, " => ", doc.data());
-      // Crie um objeto com o ID e os dados do restaurante
-      const restaurant = {
-        id: doc.id,
-        data: doc.data()
-      };
-      
-      // Adicione o objeto ao array de restaurantes
-      restaurants.push(restaurant);
-    });
-
-    setRestaurantsData(restaurants);
-
-    console.log("")
-    restaurants.forEach((rest) => {
-      console.log("Rest:", rest)
-    })
-  };*/
 
   const getRestaurantData = async () => {
     const q = query(collection(db, "restaurantes"));
@@ -113,7 +90,7 @@ export default function Menu() {
   
     querySnapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
-      console.log(doc.id, " => ", doc.data());
+      // console.log(doc.id, " => ", doc.data());
       
       // Crie uma variável "data" e insira o doc.data()
       const data = doc.data();
@@ -129,7 +106,7 @@ export default function Menu() {
   
     console.log("");
     restaurants.forEach((rest) => {
-      console.log("Rest:", rest);
+      //console.log("Rest:", rest);
     });
   };
 
@@ -143,8 +120,8 @@ export default function Menu() {
   }, []);
 
   console.log(userType);
-  console.log("RESTAURANTS DATA: ", restaurantsData);
-  console.log("length: ", restaurantsData.length !== 0);
+  //console.log("RESTAURANTS DATA: ", restaurantsData);
+  //console.log("length: ", restaurantsData.length !== 0);
 
   //console.log(restaurantData[0]["nome"]);
 

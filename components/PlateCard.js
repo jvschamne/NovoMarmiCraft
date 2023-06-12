@@ -3,17 +3,17 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function PlateCard ({data, cardType}) {
     const dados = data;
-    console.log("--- PLATE CARD: ", dados["nome"], " ----");
+    //console.log("--- PLATE CARD: ", dados["nome"], " ----");
     const navigation = useNavigation();
 
-    const handleLogin = () => {
+    const handleAdd = () => {
         console.log('ok')
-        //navigation.navigate('Restaurant', dados);
+        navigation.navigate('NewPlate');
     };
     
     if(cardType === "add"){
         return(
-            <TouchableOpacity style={styles.card} onPress={handleLogin}>
+            <TouchableOpacity style={styles.card} onPress={handleAdd}>
                 <Image source={require('../assets/plus-icon.png')} style={styles.image}/>
                 <Text style={{fontSize: 15, marginLeft: 30}}>
                     ADICIONAR PRATO
@@ -24,7 +24,7 @@ export default function PlateCard ({data, cardType}) {
 
     else if(cardType === "edit"){
         return(
-            <TouchableOpacity style={styles.card} onPress={handleLogin}>
+            <TouchableOpacity style={styles.card} onPress={handleAdd}>
                 <Image source={require('../assets/edit-icon.png')} style={styles.image}/>
                 <Text style={{fontSize: 15, marginLeft: 30}}>
                     {dados["nome"]}
@@ -34,7 +34,7 @@ export default function PlateCard ({data, cardType}) {
     }
 
     return(
-        <TouchableOpacity style={styles.card} onPress={handleLogin}>
+        <TouchableOpacity style={styles.card} onPress={handleAdd}>
             <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png'}} style={styles.image}/>
             <Text style={{fontSize: 15, marginLeft: 30}}>
                 {dados["nome"]}
