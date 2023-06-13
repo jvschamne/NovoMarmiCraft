@@ -4,9 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 export default function RestaurantCard ({data}) {
     const restId = data["id"]
     const dados = data;
-    console.log("--- RESTAURANT CARD: ", dados["nome"], " ----");
+    
+    /*console.log("--- RESTAURANT CARD: ", dados["nome"], " ----");
     console.log("Dados restaurante:", data)
-    console.log("ID restaurante:", restId)
+    console.log("ID restaurante:", restId)*/
 
     const navigation = useNavigation();
 

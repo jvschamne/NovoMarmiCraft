@@ -40,6 +40,12 @@ export default function Perfil() {
 
 
   //dados bancarios
+  console.log('-------------ETAPA 1');
+  const dadosBancariosRef = collection(db, 'clientes', uId, 'dadosBancarios');
+  console.log(dadosBancariosRef);
+  console.log('-------------ETAPA 2');
+  
+
   const [nomeTitular, setNomeTitular] = useState('')
   const [numeroCartao, setNumeroCartao] = useState('')
   const [dataValidade, setDataValidade] = useState('')
@@ -48,13 +54,31 @@ export default function Perfil() {
 
 
   console.log("\n\n\n------TELA PERFIL------\nIMAGE DOWNLOAD URL: ", imageDownloadUrl);
-  console.log("IMAGE URI: ", image);
+  /*console.log("IMAGE URI: ", image);
   console.log("initialImageUri: "+initialImageUri);
-  console.log("edit mode - setEdit = "+edit+"\n\n\n");
+  console.log("edit mode - setEdit = "+edit+"\n\n\n");*/
+
+
+  const getDadosBancarios = async () => {
+    const querySnapshot = await getDocs(dadosBancariosRef);
+    console.log('GET DADOS BANCARIOS')
+    if (!querySnapshot.empty) {
+      // Documento já existe, atualize-o
+      querySnapshot.forEach((doc) => {
+        console.log("Documento já existe. Atualizando...");
+        console.log(doc.data());
+        setPix(doc.data().pix)
+
+        setCVV(doc.data().CVV)
+        setDataValidade(doc.data().dataValidade)
+        setNomeTitular(doc.data().nomeTitular)
+        setNumeroCartao(doc.data().numeroCartao)
+      })}
+  }
 
   useEffect(() => {
     const updateImageData = async () => {
-      console.log("USE EFFECT - IMAGE DOWNLOAD URL ALTERADO!!!")
+      //console.log("USE EFFECT - IMAGE DOWNLOAD URL ALTERADO!!!")
       if(!userData["imageDownloadUrl"] || (userData["imageDownloadUrl"] && imageDownloadUrl!=="")){
         await updateDoc(userDocRef, {
           "imageDownloadUrl": imageDownloadUrl,
@@ -72,6 +96,7 @@ export default function Perfil() {
     .catch(
       (error) => console.log(error.message)
     );
+    getDadosBancarios()
 
   }, [imageDownloadUrl])
 
@@ -95,7 +120,7 @@ export default function Perfil() {
 
   const takePhoto = async () => {
     const hasPermission = await verifyPermission();
-    console.log(hasPermission);
+    //console.log(hasPermission);
     if (!hasPermission){
         return;
     }
@@ -107,7 +132,7 @@ export default function Perfil() {
       quality: 0,
     });
 
-    console.log(result);
+    //console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -121,7 +146,7 @@ export default function Perfil() {
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0,
+      quality: 0.1,
     });
 
     console.log(result);

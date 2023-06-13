@@ -54,19 +54,19 @@ export default function Menu() {
     console.log("\n\n----- MENU SCREEN -----");
     if (docSnapClients.exists()) {
       userData = docSnapClients.data();
-      console.log("INFO CLIENTE LOGADO:", userData);
+      //console.log("INFO CLIENTE LOGADO:", userData);
       type = "clientes";
-      console.log("MENU TYPE: " + type);
+      //console.log("MENU TYPE: " + type);
     } else if (docSnapRestaurants.exists()) {
       userData = docSnapRestaurants.data();
-      console.log("INFO RESTAURANTE LOGADO:", userData);
+      //console.log("INFO RESTAURANTE LOGADO:", userData);
       type = "restaurantes";
-      console.log("MENU TYPE: " + type);
+      //console.log("MENU TYPE: " + type);
     } else if (docSnapDelivery.exists()) {
       userData = docSnapDelivery.data();
-      console.log("INFO ENTREGADOR LOGADO:", userData);
+      //console.log("INFO ENTREGADOR LOGADO:", userData);
       type = "entregadores";
-      console.log("MENU TYPE: " + type);
+      //console.log("MENU TYPE: " + type);
     } else {
       // docSnap.data() will be undefined in this case
       console.log("No such document!");
@@ -113,7 +113,7 @@ export default function Menu() {
   
     querySnapshot.forEach((doc) => {
       // doc.data() is never undefined for query doc snapshots
-      console.log(doc.id, " => ", doc.data());
+      //console.log(doc.id, " => ", doc.data());
       
       // Crie uma variável "data" e insira o doc.data()
       const data = doc.data();
@@ -129,7 +129,7 @@ export default function Menu() {
   
     console.log("");
     restaurants.forEach((rest) => {
-      console.log("Rest:", rest);
+      //console.log("Rest:", rest);
     });
   };
 
@@ -142,16 +142,16 @@ export default function Menu() {
     getUserType();
   }, []);
 
-  console.log(userType);
+  /*console.log(userType);
   console.log("RESTAURANTS DATA: ", restaurantsData);
-  console.log("length: ", restaurantsData.length !== 0);
+  console.log("length: ", restaurantsData.length !== 0);*/
 
   //console.log(restaurantData[0]["nome"]);
 
 
   //???
   //navigation.addListener('beforeRemove', (e) => e.preventDefault());
-  console.log("userType: ", userType);
+  //console.log("userType: ", userType);
 
   if (userType === "clientes") {
     return (
