@@ -3,7 +3,7 @@ import { useState, useContext, useEffect } from 'react';
 import BottomTabNav from '../components/BottomTabNav';
 import {launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus, MediaTypeOptions} from 'expo-image-picker';
 import Context from '../Context';
-import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, updateDoc, getDoc, collection, collectionGroup, getDocs } from 'firebase/firestore';
 import { getDownloadURL, deleteObject, listAll, getStorage, uploadBytes, ref } from 'firebase/storage';
 import app from '../config/firebase';
 import PlateCard from '../components/PlateCard';
@@ -23,7 +23,7 @@ export default function Perfil() {
 
   const userDocRef = doc(db, userType, uId);
 
-  
+ 
   const [edit, setEdit] = useState(false);
   const initialImageUri = (userData["imageDownloadUrl"]) ? userData["imageDownloadUrl"] : exampleImageUri;
   const [image, setImage] = useState(initialImageUri);
@@ -37,6 +37,15 @@ export default function Perfil() {
   const [number, setNumber] = useState(userData["numero"]);
   const [telefone, setTelefone] = useState(userData["telefone"]);
   const [imageDownloadUrl, setImageDownloadUrl] = (userData["imageDownloadUrl"]) ? useState(userData["imageDownloadUrl"]) : useState("");
+
+
+  //dados bancarios
+  const [nomeTitular, setNomeTitular] = useState('')
+  const [numeroCartao, setNumeroCartao] = useState('')
+  const [dataValidade, setDataValidade] = useState('')
+  const [cvv, setCVV] = useState('')
+  const [pix, setPix] = useState('')
+
 
   console.log("\n\n\n------TELA PERFIL------\nIMAGE DOWNLOAD URL: ", imageDownloadUrl);
   console.log("IMAGE URI: ", image);
@@ -158,11 +167,11 @@ export default function Perfil() {
 
   // Salva mudanças feitas pelo usuário ao seu perfil
   const saveChanges = async () => {
-
+    
     if(image !== initialImageUri){
       await uploadImage();
     }
-    
+   
     if(neighbourhood!==userData["bairro"] 
     || name!==userData["nome"] 
     || number!==userData["numero"] 
@@ -182,7 +191,61 @@ export default function Perfil() {
       }
     }
 
-    setEdit(false);
+
+    console.log('-------------ETAPA 1');
+    const dadosBancariosRef = collection(db, 'clientes', uId, 'dadosBancarios');
+    console.log(dadosBancariosRef);
+    console.log('-------------ETAPA 2');
+    
+    const querySnapshot = await getDocs(dadosBancariosRef);
+
+    if (!querySnapshot.empty) {
+      // Documento já existe, atualize-o
+      querySnapshot.forEach((doc) => {
+        console.log("Documento já existe. Atualizando...");
+        console.log(doc.data());
+
+        // Faça as atualizações necessárias
+        const updatedData = {
+          pix: pix,
+          nomeTitular: nomeTitular,
+          numeroCartao: numeroCartao,
+          dataValidade: dataValidade,
+          CVV: cvv,
+        };
+
+        updateDoc(doc.ref, updatedData)
+          .then(() => {
+            console.log('Dados bancários atualizados com sucesso!');
+          })
+          .catch((error) => {
+            console.error('Erro ao atualizar os dados bancários:', error);
+          });
+      });
+    } else {
+      // Documento não existe, crie um novo
+      console.log("Documento não existe. Criando novo...");
+      const newDocumentData = {
+        pix: pix,
+          nomeTitular: nomeTitular,
+          numeroCartao: numeroCartao,
+          dataValidade: dataValidade,
+          CVV: cvv,
+      };
+
+      addDoc(dadosBancariosRef, newDocumentData)
+        .then(() => {
+          console.log('Novos dados bancários adicionados com sucesso!');
+        })
+        .catch((error) => {
+          console.error('Erro ao adicionar novos dados bancários:', error);
+        });
+  }
+
+  console.log('-------------ETAPA 3');
+
+  setEdit(false);
+
   }
 
 
@@ -322,6 +385,38 @@ export default function Perfil() {
               onChangeText={text => setTelefone(text)}
               value={telefone}
             />
+             <Text style={{marginTop: 20, fontSize: 20, fontWeight: 'bold'}}>Atualizar dados bancários:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="PIX"
+              onChangeText={text => setPix(text)}
+              value={pix}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Titular do cartão"
+              onChangeText={text => setNomeTitular(text)}
+              value={nomeTitular}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Número do cartão"
+              onChangeText={text => setNumeroCartao(text)}
+              value={numeroCartao}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Data de validade"
+              onChangeText={text => setDataValidade(text)}
+              value={dataValidade}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="CVV"
+              onChangeText={text => setCVV(text)}
+              value={cvv}
+            />
+
 
             <TouchableOpacity style={styles.button} onPress={saveChanges}>
               <Text style={styles.buttonText}>SALVAR</Text>

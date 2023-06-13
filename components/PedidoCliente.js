@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         borderColor: 'black',
         borderWidth: 1,
-        marginBottom: 25
+        marginBottom: 10
     },
     removeButton: {
         color: 'white',

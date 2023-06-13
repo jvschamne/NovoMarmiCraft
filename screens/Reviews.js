@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import { getFirestore, collection, doc, addDoc, getDoc, getDocs, query, where, setDoc } from 'firebase/firestore';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { getFirestore, collection, addDoc, getDocs, query } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid'; // Biblioteca para gerar IDs únicos
 import BottomTabNav from '../components/BottomTabNav';
 import app from '../config/firebase';
@@ -13,6 +13,8 @@ export default function Reviews(props) {
   const [reviews, setReviews] = useState('')
   const db = getFirestore(app);
   const [uId, setUId] = useContext(Context).id;
+  const [userData, setUserData] = useContext(Context).data;
+
 
 
   const handleAddReview = async () => {
@@ -23,6 +25,7 @@ export default function Reviews(props) {
     // Crie um novo documento na subcoleção "avaliacoes" do restaurante
     await addDoc(avaliacoesRef, {
       clienteId: uId,
+      nomeCliente: userData["nome"],
       comentario: newReview,
       classificacao: 0
     });
@@ -66,18 +69,6 @@ export default function Reviews(props) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Reviews</Text>
-      <View style={styles.reviews}>
-            {reviews.length !== 0 &&
-        reviews.map((avaliacao) => {
-          return (
-            <View style={styles.review}>
-              <Text>{avaliacao["comentario"]}</Text>
-            </View>
-            
-          );
-        })
-      }
-      </View>
       <View style={styles.addReviewContainer}>
         <TextInput
           style={styles.input}
@@ -89,6 +80,24 @@ export default function Reviews(props) {
           <Text style={styles.buttonText}>Adicionar</Text>
         </TouchableOpacity>
       </View>
+      <ScrollView contentContainerStyle={styles.scrollViewContent} style={styles.reviews}>
+            {reviews.length !== 0 &&
+        reviews.map((avaliacao) => {
+          return (
+            <View style={styles.review}>
+              <Image source={{ uri: userData["imageDownloadUrl"] }} style={styles.imagem}></Image>
+              <View>
+                <Text style={{marginLeft: 20, fontWeight: 'bold'}}>{avaliacao["nomeCliente"]}</Text>
+                <Text style={{marginLeft: 20}}>{avaliacao["comentario"]}</Text>
+              </View>
+              
+            </View>
+            
+          );
+        })
+      }
+      </ScrollView>
+      
       <BottomTabNav />
     </View>
   );
@@ -106,11 +115,10 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   reviews: {
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: '#fcc40d',
     width: '95%',
-    marginTop: 50,
+    marginTop: 30,
+    marginBottom: 100,
   },
   addReviewContainer: {
     flexDirection: 'row',
@@ -142,8 +150,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     marginTop: 20,
     width: '95%',
-    height: 40,
+    height: 80,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'row'
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+  },
+  imagem: {
+    height: 50,
+    width: 50,
+    marginLeft: 20,
   }
 });
