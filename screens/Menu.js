@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import RestaurantCard from '../components/RestaurantCard';
 import BottomTabNav from '../components/BottomTabNav';
 import { useNavigation } from '@react-navigation/native';
-import { getFirestore, collection, doc, setDoc, getDoc, query, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, doc, setDoc, getDoc, where, query, getDocs } from 'firebase/firestore';
 import app from '../config/firebase';
 import Context from './../Context';
 
@@ -11,33 +11,14 @@ import Pedido from '../components/Pedido';
 
 export default function Menu() {
   const db = getFirestore(app);
-  const navigation = useNavigation();
 
   const uId = useContext(Context).id[0];
   const [userType, setUserType] = useContext(Context).type;
   const [userData, setUserData] = useContext(Context).data;
   const [restaurantsData, setRestaurantsData] = useState([]);
 
-  const pedidos = [
-    ["X-Burguer", "Preparando", "Rua Jair Bolsonaro", "R$20,97"],
-    ["X-Bacon", "Entregando", "Rua Patriotas", "R$20,97"],
-    ["Pizza Calabresa", "Concluído", "Rua Paulo Kogos", "R$20,97"],
-    ["Churros", "Aguardando entregador", "Rua ChurrosBangus", "R$20,97"],
-    ["Churros", "Aguardando entregador", "Rua ChurrosBangus", "R$20,97"],
-    ["Churros", "Aguardando entregador", "Rua ChurrosBangus", "R$20,97"],
-    ["Pizza Calabresa", "Concluído", "Rua Putaria", "R$20,97"],
-    ["Churros", "Aguardando entregador", "Rua ChurrosBangus", "R$20,97"],
-  ];
-
-  const pedidosEntregador = [
-    ["X-Burguer", "Entregando", "Rua Jair Bolsonaro", "R$20,97"],
-    ["X-Bacon", "Concluído", "Rua Patriotas", "R$20,97"],
-    ["Pizza Calabresa", "Concluído", "Rua Paulo Kogos", "R$20,97"],
-    ["Churros", "Concluído", "Rua ChurrosBangus", "R$20,97"],
-    ["Churros", "Entregando", "Rua ChurrosBangus", "R$20,97"],
-    ["Churros", "Entregando", "Rua ChurrosBangus", "R$20,97"],
-    ["Pizza Calabresa", "Concluído", "Rua Putaria", "R$20,97"],
-  ]
+  const [pedidosRestaurante, setPedidosRestaurante] = useState([]) 
+  const [pedidosEntregador, setPedidosEntregador] = useState([])
 
   const getUserType = async () => {
     let type = "";
@@ -51,7 +32,7 @@ export default function Menu() {
     const docSnapRestaurants = await getDoc(docRefRestaurants);
     const docSnapDelivery = await getDoc(docRefDelivery);
 
-    console.log("\n\n----- MENU SCREEN -----");
+    //console.log("\n\n----- MENU SCREEN -----");
     if (docSnapClients.exists()) {
       userData = docSnapClients.data();
       //console.log("INFO CLIENTE LOGADO:", userData);
@@ -78,33 +59,6 @@ export default function Menu() {
     getRestaurantData();
   };
 
-  /*
-  const getRestaurantData = async () => {
-    const q = query(collection(db, "restaurantes"));
-    const querySnapshot = await getDocs(q);
-    let restaurants = [];
-
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      
-      console.log(doc.id, " => ", doc.data());
-      // Crie um objeto com o ID e os dados do restaurante
-      const restaurant = {
-        id: doc.id,
-        data: doc.data()
-      };
-      
-      // Adicione o objeto ao array de restaurantes
-      restaurants.push(restaurant);
-    });
-
-    setRestaurantsData(restaurants);
-
-    console.log("")
-    restaurants.forEach((rest) => {
-      console.log("Rest:", rest)
-    })
-  };*/
 
   const getRestaurantData = async () => {
     const q = query(collection(db, "restaurantes"));
@@ -127,31 +81,95 @@ export default function Menu() {
   
     setRestaurantsData(restaurants);
   
-    console.log("");
+    //console.log("");
     restaurants.forEach((rest) => {
       //console.log("Rest:", rest);
     });
   };
 
+ 
+  const getPedidosRestaurante = async () => {
+    try { 
+      //console.log("getPedidosRestaurante");
+  
+      //console.log("---------ETAPA1");
+      const pedidosRef = collection(db, 'pedidos');
+      //console.log(uId);
+      const q = query(pedidosRef, where('restauranteId', '==', uId));
+      //console.log("---------ETAPA2");
+      //console.log("Q:", q)
+      const auxPedidos = [];
+  
+      const querySnapshot = await getDocs(q);
+      //console.log("try2:", querySnapshot);
+      querySnapshot.forEach((doc) => {
+        //console.log('ID do pedido:', doc.id);
+        //console.log('Dados do pedido:', doc.data());
+        auxPedidos.push([doc.id, doc.data()]);
+      });
+      //console.log("try3");
+  
+      setPedidosRestaurante(auxPedidos);
+  
+    } catch (error) {
+      console.error('Erro ao encontrar os pedidos:', error);
+    }
+  }
+
+
+  const getPedidosEntregador = async () => {
+    console.log("-------------getPedidosEntregador----")
+    try {
+      console.log("getPedidosEntregador");
+  
+      console.log("---------ETAPA1");
+      const pedidosRef = collection(db, 'pedidos');
+      console.log(uId);
+      const q = query(pedidosRef);
+      console.log("---------ETAPA2");
+      console.log("Q:", q);
+      const auxPedidos = [];
+  
+      const querySnapshot = await getDocs(q);
+      console.log("try2:", querySnapshot);
+      querySnapshot.forEach((doc) => {
+        console.log('ID do pedido:', doc.id);
+        console.log('Dados do pedido:', doc.data());
+        auxPedidos.push([doc.id, doc.data()]);
+      });
+      console.log("try3");
+  
+      setPedidosEntregador(auxPedidos);
+  
+    } catch (error) {
+      console.error('Erro ao encontrar os pedidos:', error);
+    }
+  };
+  
+  
 
 
 
-
+  /*useEffect(() => {
+    getUserType();
+    if(userType === "clientes") getPedidosRestaurante();
+    else if (userType === "entregadores") getPedidosEntregador()
+    console.log(pedidosRestaurante.length)
+  }, []);*/
 
   useEffect(() => {
     getUserType();
+    getPedidosRestaurante();
+    //console.log('pedidosRestaurante:', pedidosRestaurante);
   }, []);
+  
+  useEffect(() => {
+    getUserType();
+    getPedidosEntregador()
+    //console.log('pedidosEntregador:', pedidosEntregador);
+  }, []);
+  
 
-  /*console.log(userType);
-  console.log("RESTAURANTS DATA: ", restaurantsData);
-  console.log("length: ", restaurantsData.length !== 0);*/
-
-  //console.log(restaurantData[0]["nome"]);
-
-
-  //???
-  //navigation.addListener('beforeRemove', (e) => e.preventDefault());
-  //console.log("userType: ", userType);
 
   if (userType === "clientes") {
     return (
@@ -172,8 +190,8 @@ export default function Menu() {
         <Text style={styles.title}>Pedidos</Text>
         
         <ScrollView style={styles.pedidos} contentContainerStyle={styles.scrollViewContent}>
-          {(pedidos.length !== 0) &&
-            pedidos.map((info, i) => <Pedido key={i} info={info} type={'restaurante'}></Pedido>)
+          {(pedidosRestaurante.length !== 0) &&
+            pedidosRestaurante.map((info, i) => <Pedido key={i} info={info} type={'restaurante'}></Pedido>)
           }
           </ScrollView>
        
@@ -184,25 +202,17 @@ export default function Menu() {
   }  
  
   else if (userType === "entregadores") {
-    return(
+    return (
       <View style={styles.container}>
-        <Text style={styles.title}>
-          Entregador
-        </Text>
-        <View style={styles.ganhos}>
-          <Text style={styles.title2}>Seus ganhos hoje: R$35,90</Text>
-          
-        </View>
-        <ScrollView style={styles.pedidos} contentContainerStyle={styles.scrollViewContent} >
+        <Text style={styles.title}>Entregador</Text>
+        <ScrollView style={styles.pedidos} contentContainerStyle={styles.scrollViewContent}>
           {(pedidosEntregador.length !== 0) &&
-            pedidosEntregador.map((info, i) => <Pedido key={i} info={info} type={'entregador'}></Pedido>)
+            pedidosEntregador.map((info, i) => <Pedido key={i} info={info} type={'entregador'} />)
           }
         </ScrollView>
-        
-        
-        <BottomTabNav userData={userData} userType={userType}></BottomTabNav>
+        <BottomTabNav userData={userData} userType={userType} />
       </View>
-    )
+    );
   }
   
   
@@ -228,22 +238,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     backgroundColor: '#f9f1f7',
-  },
-  ganhos: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: "white",
-    borderRadius: 25,
-    width: '80%',
-    height: 50,
-    borderColor: 'black',
-    borderWidth: 1,
-    marginBottom: 20,
-  },
-  title2: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
+  }, 
   teste: {
     width: '90%',
     height: '90%', // Alterado para 90% em vez de 80%

@@ -1,26 +1,51 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useContext } from 'react';
+import Context from '../Context';
 
-export default function BottomTabNav ({userData, userType}) {   
+
+export default function BottomTabNav () {   
     
+
+    const [userType, setUserType] = useContext(Context).type;
+
     const navigation = useNavigation();
      
     const handlePress = (screen) => {
-        console.log('navigate', screen)
+        //console.log('navigate', screen)
         navigation.navigate(screen);
     };
 
-
-    return(
-        <View style={styles.nav}>
-            <TouchableOpacity style={styles.navButton} onPress={() => handlePress('Menu')}>
-                <Text style={styles.text}>Restaurantes</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.navButton} onPress={() => handlePress('Perfil')}>
-                <Text style={styles.text}>Perfil</Text>
-            </TouchableOpacity>
-        </View>
-    )
+    if(userType === "clientes"){
+        return(
+            <View style={styles.nav}>
+                <TouchableOpacity style={styles.navButton} onPress={() => handlePress('Menu')}>
+                    <Text style={styles.text}>Restaurantes</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.navButton} onPress={() => handlePress('PedidosGanhos')}>
+                    <Text style={styles.text}>Pedidos</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.navButton} onPress={() => handlePress('Perfil')}>
+                    <Text style={styles.text}>Perfil</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+    else {
+        return(
+            <View style={styles.nav}>
+                <TouchableOpacity style={styles.navButton} onPress={() => handlePress('Menu')}>
+                    <Text style={styles.text}>Pedidos</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.navButton} onPress={() => handlePress('PedidosGanhos')}>
+                    <Text style={styles.text}>Ganhos</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.navButton} onPress={() => handlePress('Perfil')}>
+                    <Text style={styles.text}>Perfil</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
 }
 
 const styles = StyleSheet.create({

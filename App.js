@@ -9,6 +9,7 @@ import Register from './screens/Register';
 import Perfil from './screens/Perfil';
 import Carrinho from './screens/Carrinho';
 import Reviews from './screens/Reviews';
+import PedidosGanhos from './screens/PedidosGanhos';
 import { LogBox } from 'react-native';
 import Context from './Context';
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -39,6 +40,7 @@ const App = () => {
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="Perfil" component={Perfil} />
           <Stack.Screen name="Reviews" component={Reviews} />
+          <Stack.Screen name="PedidosGanhos" component={PedidosGanhos} />
         </Stack.Navigator>
       </NavigationContainer>
     </Context.Provider>

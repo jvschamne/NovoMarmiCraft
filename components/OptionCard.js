@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function OptionCard ({name, price}) {
+export default function OptionCard ({name, price, addOpcao}) {
 
     const navigation = useNavigation();
 
@@ -23,7 +23,7 @@ export default function OptionCard ({name, price}) {
                 </Text>
             </View>
             
-            <TouchableOpacity style={styles.addButton} onPress={handleAddButton}>
+            <TouchableOpacity style={styles.addButton} onPress={() => addOpcao(name, price)}>
                 <Text style={{fontWeight: 'bold', fontSize: 20}}>
                    +
                 </Text>

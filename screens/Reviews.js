@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { getFirestore, collection, addDoc, getDocs, query } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, getDoc, query, doc } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid'; // Biblioteca para gerar IDs únicos
 import BottomTabNav from '../components/BottomTabNav';
 import app from '../config/firebase';
@@ -35,30 +35,45 @@ export default function Reviews(props) {
     setNewReview('');
   };
 
+
   const getReviewsData = async () => {
-
     const q = query(collection(db, 'restaurantes', restaurantData["id"], 'avaliacoes'));
-
     const querySnapshot = await getDocs(q);
     let auxReviews = [];
   
-
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      //console.log(doc.id, " => ", doc.data());
-      
-      // Crie uma variável "data" e insira o doc.data()
-      const data = doc.data();
-      
-      // Insira o ID no objeto "data"
-      data.id = doc.id;
-      
-      // Adicione o objeto "data" ao array de reviews
-      auxReviews.push(data);
+    const reviewsPromises = querySnapshot.docs.map(async (info) => {
+      const data = info.data();
+      data.id = info.id;
+  
+      const clienteId = data.clienteId;
+      const clienteRef = doc(db, 'clientes', clienteId);
+  
+      try {
+        const clienteSnapshot = await getDoc(clienteRef);
+  
+        if (clienteSnapshot.exists() && clienteSnapshot.data()) {
+          const clienteData = clienteSnapshot.data();
+          const imagemCliente = clienteData.imageDownloadUrl;
+  
+          // Adicione a URL da imagem do cliente à revisão
+          data.imagemCliente = imagemCliente;
+          console.log('Dados do cliente:', clienteData);
+        } else {
+          console.log('O cliente não existe ou não contém dados.');
+        }
+      } catch (error) {
+        console.log('Erro ao obter os dados do cliente:', error);
+      }
+  
+      return data;
     });
-
+  
+    const reviews = await Promise.all(reviewsPromises);
+    auxReviews = reviews.filter(review => review); // Remover entradas falsas, se houver
+  
     setReviews(auxReviews);
   };
+  
 
 
   useEffect(() => {
@@ -82,10 +97,12 @@ export default function Reviews(props) {
       </View>
       <ScrollView contentContainerStyle={styles.scrollViewContent} style={styles.reviews}>
             {reviews.length !== 0 &&
-        reviews.map((avaliacao) => {
+        reviews.map((avaliacao, i) => {
+
+
           return (
-            <View style={styles.review}>
-              <Image source={{ uri: userData["imageDownloadUrl"] }} style={styles.imagem}></Image>
+            <View style={styles.review} key={i}>
+              <Image source={{ uri: avaliacao["imagemCliente"] }} style={styles.imagem}></Image>
               <View>
                 <Text style={{marginLeft: 20, fontWeight: 'bold'}}>{avaliacao["nomeCliente"]}</Text>
                 <Text style={{marginLeft: 20}}>{avaliacao["comentario"]}</Text>

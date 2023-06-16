@@ -3,7 +3,7 @@ import { useState, useContext, useEffect } from 'react';
 import BottomTabNav from '../components/BottomTabNav';
 import {launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus, MediaTypeOptions} from 'expo-image-picker';
 import Context from '../Context';
-import { getFirestore, doc, setDoc, updateDoc, getDoc, collection, collectionGroup, getDocs } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, updateDoc, getDoc, collection, collectionGroup, getDocs, addDoc } from 'firebase/firestore';
 import { getDownloadURL, deleteObject, listAll, getStorage, uploadBytes, ref } from 'firebase/storage';
 import app from '../config/firebase';
 import PlateCard from '../components/PlateCard';
@@ -53,7 +53,7 @@ export default function Perfil() {
   const [pix, setPix] = useState('')
 
 
-  console.log("\n\n\n------TELA PERFIL------\nIMAGE DOWNLOAD URL: ", imageDownloadUrl);
+  //console.log("\n\n\n------TELA PERFIL------\nIMAGE DOWNLOAD URL: ", imageDownloadUrl);
   /*console.log("IMAGE URI: ", image);
   console.log("initialImageUri: "+initialImageUri);
   console.log("edit mode - setEdit = "+edit+"\n\n\n");*/

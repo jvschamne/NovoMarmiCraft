@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, TextInput} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown'
 import BottomTabNav from '../components/BottomTabNav';
-import { getFirestore, doc, setDoc, updateDoc, getDoc, collection, collectionGroup, getDocs } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, updateDoc, getDoc, collection, addDoc, collectionGroup, getDocs } from 'firebase/firestore';
 import PedidoCliente from '../components/PedidoCliente';
 import { useNavigation } from '@react-navigation/native';
 import { useState, useContext, useEffect } from 'react';
@@ -9,9 +9,15 @@ import Context from '../Context';
 import app from '../config/firebase';
 
 export default function Carrinho(props) {
-    
+    const data = props.route.params
+    const restaurantData = data[0]
+    const [pedidos, setPedidos] = useState(data[1])
+    const [preco, setPreco] = useState(0)
+
+    console.log("RESTAURANTE DATA CARRINHO: ", restaurantData)
     const [uId, setUId] = useContext(Context).id;
     const db = getFirestore(app);
+    
     
     const [metodosPagamento, setMetodosPagamento] = useState("")
 
@@ -32,33 +38,90 @@ export default function Carrinho(props) {
         }
     }
     
-    const handleBuyButton = () => {
-        console.log()
-        navigation.navigate('Perfil')
-    }
+    const handleBuyButton = async () => {
+
+
+        let nomesPedidos = []
+        let precoPedidos = 0
+        //tratando Pedidos
+        pedidos.forEach(elem => {
+            console.log(elem)
+            nomesPedidos.push(elem[0])
+            precoPedidos += elem[1]
+        })
+
+
+        precoPedidos = precoPedidos.toFixed(2);
+
+        console.log(nomesPedidos)
+        console.log(precoPedidos)
+
+        const dadosPedidos = pedidos
+
+        try {
+          // Crie um novo documento de pedido na coleção "pedidos"
+          const novoPedidoRef = await addDoc(collection(db, 'pedidos'), {
+            pedido: nomesPedidos,
+            precoTotal: precoPedidos,
+            clienteId: uId,
+            status: "Preparando",
+            restauranteId: restaurantData["id"],
+          });
+          
+          // Obtenha o ID do novo pedido
+          const novoPedidoId = novoPedidoRef.id;
+      
+          console.log('Novo pedido criado:', novoPedidoId);
+      
+         
+          
+          //redireciona
+          navigation.navigate('Perfil');
+        } catch (error) {
+          console.error('Erro ao criar um novo pedido:', error);
+        }
+      };
+      
 
     const navigation = useNavigation();
 
 
-    const pedidoTemporario = [
-        ["X-Burguer", "R$22,90"], 
-        ["Pizza", "R$42,90"], 
-        ["Churros", "R$12,90"],
-        ["Sonho", "R$5,90"],
-    ]
+    const removeOpcao = (nomeOpcao, precoOpcao) => {
+        console.log("Remove opcao", nomeOpcao, precoOpcao)
+        // Crie uma nova lista de pedidos excluindo a opção removida
+        const novosPedidos = pedidos.filter(opcao => opcao[0] !== nomeOpcao && opcao[1] !== precoOpcao);
+
+        // Atualize o estado "pedidos" com a nova lista de pedidos
+        setPedidos(novosPedidos);
+    }
+
 
     useEffect(() => {
         getCardData()
-    }, [])
+        
+
+        let auxPreco = 0
+        //tratando Pedidos
+        pedidos.forEach(elem => {
+            console.log(elem)
+            auxPreco += elem[1]
+        })
+
+
+        auxPreco = auxPreco.toFixed(2);
+        setPreco(auxPreco)
+
+    }, [pedidos])
 
     return(
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}style={styles.container}>
                 <Text style={styles.title}>Seu pedido</Text> 
+    
                 <ScrollView contentContainerStyle={styles.scrollViewContent} style={{
                     marginBottom: 400, marginTop: 20}}>
-                        {pedidoTemporario.length != 0 &&
-                            pedidoTemporario.map((opcao, i) => <PedidoCliente key={i} name={opcao[0]} price={opcao[1]}/>)
+                        {pedidos.length != 0 &&
+                            pedidos.map((opcao, i) => <PedidoCliente key={i} name={opcao[0]} price={opcao[1]} funcaoRemove={removeOpcao}/>)
                         }
                 </ScrollView>
                 
@@ -87,7 +150,7 @@ export default function Carrinho(props) {
                     </View>
                     <Text style={styles.label}>Gorjeta ao entregador</Text>
           <TextInput style={styles.input} />
-          <Text style={styles.total}>Total a pagar: R$43,99</Text>
+          <Text style={styles.total}>Total a pagar: R${preco}</Text>
           <TouchableOpacity style={styles.checkoutButton} onPress={handleBuyButton}>
             <Text style={styles.buttonText}>Finalizar pedido</Text>
           </TouchableOpacity>

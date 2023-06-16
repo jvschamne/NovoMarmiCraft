@@ -1,15 +1,8 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function PedidoCliente ({name, price}) {
+export default function PedidoCliente ({name, price, funcaoRemove}) {
 
-    const navigation = useNavigation();
-
-    const handleRemoveButton = () => {
-        console.log('ok')
-        
-    };
-    
 
     return(
         <TouchableOpacity style={styles.card}>
@@ -22,7 +15,7 @@ export default function PedidoCliente ({name, price}) {
                     {price}
                 </Text>
             </View>
-            <TouchableOpacity style={styles.removeButton} onPress={handleRemoveButton}>
+            <TouchableOpacity style={styles.removeButton} onPress={() => funcaoRemove(name, price)}>
                 <Text style={{fontWeight: 'bold', fontSize: 20}}>
                    -
                 </Text>
