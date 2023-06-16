@@ -31,6 +31,8 @@ export default function Perfil() {
 
   const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
 
+  const [platesAdded, setPlatesAdded] = useState(false);
+
   const [name, setName] = useState(userData.data["nome"]);
   //const [email, setEmail] = useState(userData["e-mail"]);
 
@@ -49,7 +51,7 @@ export default function Perfil() {
   useEffect(() => {
     const updateImageData = async () => {
       console.log("USE EFFECT - IMAGE DOWNLOAD URL ALTERADO!!!")
-      if(!userData.data["imageDownloadUrl"] || (userData.data["imageDownloadUrl"] && imageDownloadUrl!=="")){
+      if(imageDownloadUrl!=="" && imageDownloadUrl!==userData.data["imageDownloadUrl"]){
         await updateDoc(userDocRef, {
           "imageDownloadUrl": imageDownloadUrl,
         });
@@ -263,8 +265,8 @@ export default function Perfil() {
 
           </ScrollView>
 
+          
 
-    
           <StatusBar style="auto" />
           <BottomTabNav></BottomTabNav>
 
@@ -376,6 +378,37 @@ export default function Perfil() {
             </TouchableOpacity>
             
             <PlatesList style={styles.plates} type="edit"/>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Nome"
+              onChangeText={text => setName(text)}
+              value={name}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Bairro"
+              onChangeText={text => setNeighbourhood(text)}
+              value={neighbourhood}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Rua"
+              onChangeText={text => setStreet(text)}
+              value={street}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Número"
+              onChangeText={text => setNumber(text)}
+              value={number}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Telefone (DD XXXXX-XXXX) "
+              onChangeText={text => setTelefone(text)}
+              value={telefone}
+            />
 
             <TouchableOpacity style={styles.button} onPress={saveChanges}>
               <Text style={styles.buttonText}>SALVAR</Text>

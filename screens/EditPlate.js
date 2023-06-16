@@ -9,58 +9,45 @@ import { useNavigation, StackActions } from '@react-navigation/native';
 import app from '../config/firebase';
 import Context from '../Context';
 
-export default function NewPlate(props) {
+export default function EditPlate(props) {
+    const plate = props.route.params.plate;
+
     const restaurantData = useContext(Context).data[0];
-    console.log("\n\n\n---- NEW PLATE SCREEN ----");
+    console.log("\n\n\n---- EDIT PLATE SCREEN ----");
+    console.log("plate: ", plate);
     console.log("restaurantData: ", restaurantData);
     console.log("restaurantData[id]: ", restaurantData["id"]);
 
     const db = getFirestore(app);
     const storage = getStorage(app);
     const pratosRef = collection(db, 'restaurantes', restaurantData["id"], 'pratos');
-    const [newPlateRef, setNewPlateRef] = useState({});
-    console.log("newPlateRef: ", newPlateRef);
+
     const navigation = useNavigation();
     const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
-    const [plateName, setPlateName] = useState("");
-    const [plateDesc, setPlateDesc] = useState("");
-    const [platePrice, setPlatePrice] = useState("");
-    const initialImageUri = 'https://jvschamne.github.io/marmicraft/marmita.png';
+    const [plateName, setPlateName] = useState(plate["nome"]);
+    const [plateDesc, setPlateDesc] = useState(plate["descricao"]);
+    const [platePrice, setPlatePrice] = useState(plate["preco"]);
+    const initialImageUri = (plate["imagePlateUrl"]) ? plate["imagePlateUrl"] : 'https://jvschamne.github.io/marmicraft/marmita.png';
     const [imagePlate, setImagePlate] = useState(initialImageUri);
-    const [imagePlateUrl, setImagePlateUrl] = useState("");
-    const [wasCreated, setWasCreated] = useState(false);
+    const [imagePlateUrl, setImagePlateUrl] = (plate["imagePlateUrl"]) ? useState(plate["imagePlateUrl"]) : useState("");
     
 
     useEffect(() => {
       const updateImageData = async () => {
-        //const docSnap = await getDoc(newPlateRef);
         console.log("USE EFFECT - IMAGE PLATE URL ALTERADO!!!");
         console.log("USE EFFECT - imagePlateUrl: ", imagePlateUrl);
 
-        if(imagePlateUrl!==""){
-          console.log("USE EFFECT - wasCreated: ", wasCreated);
-          if(wasCreated){
-            console.log("USE EFFECT - Prato já existe, e está sendo atualizado!")
-            console.log("USE EFFECT - newPlateRef: ", newPlateRef);
-            await updateDoc(newPlateRef, {
-              "imagePlateUrl": imagePlateUrl,
+        if(imagePlateUrl!=="" && imagePlateUrl!==plate["imagePlateUrl"]){
+            await updateDoc(doc(pratosRef, plate.id), {
+                "imagePlateUrl": imagePlateUrl,
             })
             .then(() => {
-              //navigation.navigate("Perfil");
+              //navigation.navigate("Perfil");  
               navigation.dispatch(StackActions.pop(1));
-            })  
-          } 
-          else {
-            console.log("USE EFFECT - Prato não existe, mas acabou de ser criado!")
-            const auxRef =  await addDoc(pratosRef, {
-              "imagePlateUrl": imagePlateUrl,
-            });
-            setNewPlateRef(auxRef);
-            console.log("newPlateRef: ", newPlateRef);
-            setWasCreated(true);
+            })
             // docSnap.data() will be undefined in this case
-          }
         }
+        
       }
   
       updateImageData()
@@ -162,45 +149,32 @@ export default function NewPlate(props) {
     }
 
 
-    const handleAddPlate = async () => {
+    const updatePlate = async () => {
+        if(plateName!==plate["nome"] 
+        || plateDesc!==plate["descricao"] 
+        || platePrice!==plate["preco"]){
+            await updateDoc(doc(pratosRef, plate.id), {
+                nome: plateName,
+                descricao: plateDesc, 
+                preco: platePrice,
+            }) 
+        }
 
-        console.log("wasCreated: ", wasCreated);
-        if (wasCreated) {
-          console.log("Prato existe - dados:", docSnap.data());
-          await updateDoc(newPlateRef, {
-            nome: plateName,
-            descricao: plateDesc,
-            preco: platePrice,
-          });
-        } 
+        if(imagePlate !== initialImageUri){
+            await uploadImage();
+        }
         else {
-          console.log("Prato não existe, mas acabou de ser criado!")
-          const auxRef = await addDoc(pratosRef, {
-            nome: plateName,
-            descricao: plateDesc,
-            preco: platePrice,
-          })
-          .then(async (obj) => {
-            setNewPlateRef(obj);
-            console.log("newPlateRef: ", obj);
-            setWasCreated(true);
-            if(imagePlate !== initialImageUri){
-              await uploadImage();
-            }
-            else{
-              //navigation.navigate("Perfil");
-              navigation.dispatch(StackActions.pop(1));
-            }
-          })
+          //navigation.navigate("Perfil");  
+          navigation.dispatch(StackActions.pop(1));
         }
     
-        console.log('Prato adicionado com sucesso!');
+        console.log('Prato atualizado com sucesso!');
         
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Novo prato</Text>
+            <Text style={styles.title}>Editar prato</Text>
             <Image source={{ uri: imagePlate }} style={styles.image} />
 
             <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
@@ -230,8 +204,8 @@ export default function NewPlate(props) {
                 value={platePrice}
                 onChangeText={text => setPlatePrice(text)}
             />
-            <TouchableOpacity style={styles.addButton} onPress={handleAddPlate}>
-                <Text style={styles.buttonText}>ADICIONAR</Text>
+            <TouchableOpacity style={styles.addButton} onPress={updatePlate}>
+                <Text style={styles.buttonText}>SALVAR</Text>
             </TouchableOpacity>
             <BottomTabNav></BottomTabNav>
         </View>

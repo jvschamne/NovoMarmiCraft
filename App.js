@@ -18,6 +18,8 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 //firebase
 import app from './config/firebase';
 import { getFirestore, collection, doc, setDoc, getDoc } from 'firebase/firestore';
+import EditPlate from './screens/EditPlate';
+import EditPlatesMenu from './screens/EditPlatesMenu';
 
 const db = getFirestore(app);
 
@@ -41,6 +43,8 @@ const App = () => {
           <Stack.Screen name="Perfil" component={Perfil} />
           <Stack.Screen name="Reviews" component={Reviews} />
           <Stack.Screen name="NewPlate" component={NewPlate} />
+          <Stack.Screen name="EditPlate" component={EditPlate} />
+          <Stack.Screen name="EditPlatesMenu" component={EditPlatesMenu} />
         </Stack.Navigator>
       </NavigationContainer>
     </Context.Provider>

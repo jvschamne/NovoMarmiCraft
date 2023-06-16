@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import { getFirestore, collection, doc, addDoc, getDoc, getDocs, query, where, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, doc, addDoc, getDoc, getDocs, query, where, setDoc} from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid'; // Biblioteca para gerar IDs únicos
 import BottomTabNav from './BottomTabNav';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -15,7 +15,9 @@ export default function PlatesList({type}) {
   console.log("restaurantData[id]: ", restaurantData["id"]);
 
   const db = getFirestore(app);
+  const navigation = useNavigation();
   const [plates, setPlates] = useState([]);
+  const [editMenu, setEditMenu] = useState("nao editando");
 
 
   const getPlatesData = async () => {
@@ -37,53 +39,55 @@ export default function PlatesList({type}) {
 
   useEffect(() => {
     getPlatesData()
-  }, [])
+  })
 
   if(type !== "edit"){
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Pratos</Text>
+        <Text style={styles.title}>PRATOS</Text>
 
         <View style={styles.plates}>
           {plates.length !== 0 &&
-            plates.map((prato) => {
+            plates.map((prato, i) => {
               return (
-                <View style={styles.review}>
-                  <Text>{prato}</Text>
-                </View>
-                
+                <PlateCard key={i} data={prato}/>
               );
             })
           }
         </View>
 
+        {/*
+        <TouchableOpacity style={styles.editMenuButton} onPress={() => navigation.navigate("EditPlatesMenu", plates)}>
+          <Text>EDITAR CARDÁPIO</Text>
+        </TouchableOpacity>
+        */}
+
       </View>
     );
   }
 
-  else{
+  else {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Pratos</Text>
+      
+        <Text style={styles.title}>PRATOS</Text>
 
         <View style={styles.plates}>
-          {plates.length !== 0 &&
-            plates.map((prato) => {
-              return (
-                <View style={styles.review}>
-                  <Text>{prato}</Text>
-                </View>
-                
-              );
+        {plates.length !== 0 &&
+            plates.map((prato, i) => {
+            return (
+                <PlateCard key={i} data={prato} cardType="edit" />
+            );
             })
-          }
+        }
         </View>
 
-        <PlateCard cardType="add"/>
+        <PlateCard cardType="add" />
 
       </View>
     );
   }
+  
 }
 
 const styles = StyleSheet.create({
@@ -103,9 +107,9 @@ const styles = StyleSheet.create({
   plates: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fcc40d',
-    width: '95%',
-    marginTop: 50,
+    backgroundColor: '#f9f1f7',
+    width: '100%',
+    marginTop: 10,
   },
   addReviewContainer: {
     flexDirection: 'row',
@@ -123,11 +127,14 @@ const styles = StyleSheet.create({
     marginRight: 10,
     paddingHorizontal: 10,
   },
-  addButton: {
+  editMenuButton: {
     backgroundColor: '#fcc40d',
     paddingHorizontal: 15,
     paddingVertical: 10,
-    borderRadius: 5,
+    borderRadius: 10,
+    borderWidth: 2,
+    marginBottom: 30,
+    marginTop: 10,
   },
   buttonText: {
     color: 'black',
