@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     backgroundColor: '#f9f1f7',
     marginTop: 20,
-    marginBottom: 25,
+    marginBottom: 10,
   },
   editContainer: {
     flex: 1,

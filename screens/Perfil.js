@@ -67,7 +67,7 @@ export default function Perfil() {
       querySnapshot.forEach((doc) => {
         console.log("Documento já existe. Atualizando...");
         console.log(doc.data());
-        setPixCliente(doc.data().pixCliente)
+        setPixCliente(doc.data().pix)
 
         setCVV(doc.data().CVV)
         setDataValidade(doc.data().dataValidade)
@@ -239,49 +239,51 @@ export default function Perfil() {
     console.log(dadosBancariosRef);
     console.log('-------------ETAPA 2');
     
-    const querySnapshot = await getDocs(dadosBancariosRef);
+    if(userType === "clientes"){
+      const querySnapshot = await getDocs(dadosBancariosRef);
 
-    if (!querySnapshot.empty) {
-      // Documento já existe, atualize-o
-      querySnapshot.forEach((doc) => {
-        console.log("Documento já existe. Atualizando...");
-        console.log(doc.data());
+      if (!querySnapshot.empty) {
+        // Documento já existe, atualize-o
+        querySnapshot.forEach((doc) => {
+          console.log("Documento já existe. Atualizando...");
+          console.log(doc.data());
 
-        // Faça as atualizações necessárias
-        const updatedData = {
-          pix: pixCliente,
-          nomeTitular: nomeTitular,
-          numeroCartao: numeroCartao,
-          dataValidade: dataValidade,
-          CVV: cvv,
+          // Faça as atualizações necessárias
+          const updatedData = {
+            pix: pixCliente,
+            nomeTitular: nomeTitular,
+            numeroCartao: numeroCartao,
+            dataValidade: dataValidade,
+            CVV: cvv,
+          };
+
+          updateDoc(doc.ref, updatedData)
+            .then(() => {
+              console.log('Dados bancários atualizados com sucesso!');
+            })
+            .catch((error) => {
+              console.error('Erro ao atualizar os dados bancários:', error);
+            });
+        });
+      } else {
+        // Documento não existe, crie um novo
+        console.log("Documento não existe. Criando novo...");
+        const newDocumentData = {
+            pix: pixCliente,
+            nomeTitular: nomeTitular,
+            numeroCartao: numeroCartao,
+            dataValidade: dataValidade,
+            CVV: cvv,
         };
 
-        updateDoc(doc.ref, updatedData)
+        addDoc(dadosBancariosRef, newDocumentData)
           .then(() => {
-            console.log('Dados bancários atualizados com sucesso!');
+            console.log('Novos dados bancários adicionados com sucesso!');
           })
           .catch((error) => {
-            console.error('Erro ao atualizar os dados bancários:', error);
+            console.error('Erro ao adicionar novos dados bancários:', error);
           });
-      });
-    } else {
-      // Documento não existe, crie um novo
-      console.log("Documento não existe. Criando novo...");
-      const newDocumentData = {
-          pix: pixCliente,
-          nomeTitular: nomeTitular,
-          numeroCartao: numeroCartao,
-          dataValidade: dataValidade,
-          CVV: cvv,
-      };
-
-      addDoc(dadosBancariosRef, newDocumentData)
-        .then(() => {
-          console.log('Novos dados bancários adicionados com sucesso!');
-        })
-        .catch((error) => {
-          console.error('Erro ao adicionar novos dados bancários:', error);
-        });
+      }
     }
 
     console.log('-------------ETAPA 3');
@@ -320,7 +322,7 @@ export default function Perfil() {
 
             <Text style={styles.normalText}>{userData.data["bairro"]}</Text>
             <Text style={styles.normalText}>{userData.data["rua"]}, {userData.data["numero"]}</Text>
-            <Text style={styles.normalText}>{userData.data["telefone"]}</Text>
+            <Text style={styles.normalText}>Telefone: {userData.data["telefone"]}</Text>
 
             <TouchableOpacity style={styles.editButton} onPress={() => {
                 setEdit(true);
@@ -357,7 +359,7 @@ export default function Perfil() {
 
             <Text style={styles.normalText}>{userData.data["bairro"]}</Text>
             <Text style={styles.normalText}>{userData.data["rua"]}, {userData.data["numero"]}</Text>
-            <Text style={styles.normalText}>{userData.data["telefone"]}</Text>
+            <Text style={styles.normalText}>Telefone: {userData.data["telefone"]}</Text>
               
             <PlatesList style={styles.plates}/>
 
@@ -394,7 +396,7 @@ export default function Perfil() {
 
             <Image source={{ uri: image }} style={styles.image} />
 
-            <Text style={styles.normalText}>{userData.data["telefone"]}</Text>
+            <Text style={styles.normalText}>Telefone: {userData.data["telefone"]}</Text>
 
             <TouchableOpacity style={styles.editButton} onPress={() => {
                 setEdit(true);
@@ -439,30 +441,35 @@ export default function Perfil() {
               <Text>Galeria</Text>
             </TouchableOpacity>
 
+            <Text style={styles.text}>Nome:</Text>
             <TextInput
               style={styles.input}
               placeholder="Nome"
               onChangeText={text => setName(text)}
               value={name}
             />
+            <Text style={styles.text}>Bairro:</Text>
             <TextInput
               style={styles.input}
               placeholder="Bairro"
               onChangeText={text => setNeighbourhood(text)}
               value={neighbourhood}
             />
+            <Text style={styles.text}>Rua:</Text>
             <TextInput
               style={styles.input}
               placeholder="Rua"
               onChangeText={text => setStreet(text)}
               value={street}
             />
+            <Text style={styles.text}>Número:</Text>
             <TextInput
               style={styles.input}
               placeholder="Número"
               onChangeText={text => setNumber(text)}
               value={number}
             />
+            <Text style={styles.text}>Telefone:</Text>
             <TextInput
               style={styles.input}
               placeholder="Telefone (DD XXXXX-XXXX) "
@@ -470,30 +477,35 @@ export default function Perfil() {
               value={telefone}
             />
              <Text style={{marginTop: 20, fontSize: 20, fontWeight: 'bold'}}>Atualizar dados bancários:</Text>
+             <Text style={styles.text}>PIX:</Text>
             <TextInput
               style={styles.input}
               placeholder="PIX"
               onChangeText={text => setPixCliente(text)}
               value={pixCliente}
             />
+            <Text style={styles.text}>Titular do cartão:</Text>
             <TextInput
               style={styles.input}
               placeholder="Titular do cartão"
               onChangeText={text => setNomeTitular(text)}
               value={nomeTitular}
             />
+            <Text style={styles.text}>Número do cartão:</Text>
             <TextInput
               style={styles.input}
               placeholder="Número do cartão"
               onChangeText={text => setNumeroCartao(text)}
               value={numeroCartao}
             />
+            <Text style={styles.text}>Data de validade:</Text>
             <TextInput
               style={styles.input}
               placeholder="Data de validade"
               onChangeText={text => setDataValidade(text)}
               value={dataValidade}
             />
+            <Text style={styles.text}>CVV:</Text>
             <TextInput
               style={styles.input}
               placeholder="CVV"
@@ -529,30 +541,35 @@ export default function Perfil() {
               <Text>Galeria</Text>
             </TouchableOpacity>
 
+            <Text style={styles.text}>Nome:</Text>
             <TextInput
               style={styles.input}
               placeholder="Nome"
               onChangeText={text => setName(text)}
               value={name}
             />
+            <Text style={styles.text}>Bairro:</Text>
             <TextInput
               style={styles.input}
               placeholder="Bairro"
               onChangeText={text => setNeighbourhood(text)}
               value={neighbourhood}
             />
+            <Text style={styles.text}>Rua:</Text>
             <TextInput
               style={styles.input}
               placeholder="Rua"
               onChangeText={text => setStreet(text)}
               value={street}
             />
+            <Text style={styles.text}>Número:</Text>
             <TextInput
               style={styles.input}
               placeholder="Número"
               onChangeText={text => setNumber(text)}
               value={number}
             />
+            <Text style={styles.text}>Telefone:</Text>
             <TextInput
               style={styles.input}
               placeholder="Telefone (DD XXXXX-XXXX) "
@@ -589,18 +606,21 @@ export default function Perfil() {
               <Text>Galeria</Text>
             </TouchableOpacity>
 
+            <Text style={styles.text}>Nome:</Text>
             <TextInput
               style={styles.input}
               placeholder="Nome"
               onChangeText={text => setName(text)}
               value={name}
             />
+            <Text style={styles.text}>Chave PIX:</Text>
             <TextInput
               style={styles.input}
               placeholder="Chave PIX"
               onChangeText={text => setPixEntregador(text)}
               value={pixEntregador}
             />
+            <Text style={styles.text}>Telefone:</Text>
             <TextInput
               style={styles.input}
               placeholder="Telefone (DD XXXXX-XXXX) "
@@ -706,6 +726,7 @@ const styles = StyleSheet.create({
       alignItems:'center',
       alignSelf:'center',
       borderRadius: 30,
+      marginTop: 20,
     },
     button: {
       backgroundColor: 'black',
@@ -748,8 +769,14 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       borderRadius: 15,
       padding: 8,
-      marginTop: 15,
+      marginTop: 5,
       margin: 8,
       width: '80%',
+    },
+    text: {
+      fontSize: 15,
+      alignSelf: 'baseline',
+      marginTop: 10,
+      marginLeft: 50,
     },
 })
