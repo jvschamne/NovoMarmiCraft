@@ -25,7 +25,7 @@ export default function Reviews(props) {
     // Crie um novo documento na subcoleção "avaliacoes" do restaurante
     await addDoc(avaliacoesRef, {
       clienteId: uId,
-      nomeCliente: userData["nome"],
+      nomeCliente: userData.data["nome"],
       comentario: newReview,
       classificacao: 0
     });
