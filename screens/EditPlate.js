@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Image } from 'react-native';
 import { getFirestore, collection, doc, addDoc, getDoc, getDocs, query, where, setDoc, updateDoc} from 'firebase/firestore';
 import { getDownloadURL, deleteObject, listAll, getStorage, uploadBytes, ref } from 'firebase/storage';
 import {launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus, MediaTypeOptions} from 'expo-image-picker';
@@ -11,6 +11,7 @@ import Context from '../Context';
 
 export default function EditPlate(props) {
     const plate = props.route.params.plate;
+    const rerenderFunc = props.route.params.rerenderFunc;
 
     const restaurantData = useContext(Context).data[0];
     console.log("\n\n\n---- EDIT PLATE SCREEN ----");
@@ -42,8 +43,10 @@ export default function EditPlate(props) {
                 "imagePlateUrl": imagePlateUrl,
             })
             .then(() => {
-              //navigation.navigate("Perfil");  
-              navigation.dispatch(StackActions.pop(1));
+              navigation.navigate("Perfil");
+              //navigation.dispatch(StackActions.pop(1));
+
+              rerenderFunc(true);
             })
             // docSnap.data() will be undefined in this case
         }
@@ -164,8 +167,10 @@ export default function EditPlate(props) {
             await uploadImage();
         }
         else {
-          //navigation.navigate("Perfil");  
-          navigation.dispatch(StackActions.pop(1));
+          navigation.navigate("Perfil");  
+          //navigation.dispatch(StackActions.pop(1));
+
+          rerenderFunc(true);
         }
     
         console.log('Prato atualizado com sucesso!');
@@ -174,6 +179,7 @@ export default function EditPlate(props) {
 
     return (
         <View style={styles.container}>
+          <ScrollView style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
             <Text style={styles.title}>Editar prato</Text>
             <Image source={{ uri: imagePlate }} style={styles.image} />
 
@@ -207,7 +213,10 @@ export default function EditPlate(props) {
             <TouchableOpacity style={styles.addButton} onPress={updatePlate}>
                 <Text style={styles.buttonText}>SALVAR</Text>
             </TouchableOpacity>
-            <BottomTabNav></BottomTabNav>
+          </ScrollView>
+
+          <BottomTabNav></BottomTabNav>
+
         </View>
     );
 
@@ -290,6 +299,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 20,
     borderRadius: 30,
+    marginBottom: '25%',
   },
   buttonText: {
     color: 'black',
@@ -302,5 +312,8 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
+  scrollView: {
+    width: '100%',
+  },
 });

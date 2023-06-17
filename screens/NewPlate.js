@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Image } from 'react-native';
 import { getFirestore, collection, doc, addDoc, getDoc, getDocs, query, where, setDoc, updateDoc} from 'firebase/firestore';
 import { getDownloadURL, deleteObject, listAll, getStorage, uploadBytes, ref } from 'firebase/storage';
 import {launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus, MediaTypeOptions} from 'expo-image-picker';
@@ -14,6 +14,8 @@ export default function NewPlate(props) {
     console.log("\n\n\n---- NEW PLATE SCREEN ----");
     console.log("restaurantData: ", restaurantData);
     console.log("restaurantData[id]: ", restaurantData["id"]);
+
+    const rerenderFunc = props.route.params.rerenderFunc;
 
     const db = getFirestore(app);
     const storage = getStorage(app);
@@ -46,8 +48,10 @@ export default function NewPlate(props) {
               "imagePlateUrl": imagePlateUrl,
             })
             .then(() => {
-              //navigation.navigate("Perfil");
-              navigation.dispatch(StackActions.pop(1));
+              navigation.navigate("Perfil");
+              //navigation.dispatch(StackActions.pop(1));
+
+              rerenderFunc(true);
             })  
           } 
           else {
@@ -188,8 +192,10 @@ export default function NewPlate(props) {
               await uploadImage();
             }
             else{
-              //navigation.navigate("Perfil");
-              navigation.dispatch(StackActions.pop(1));
+              navigation.navigate("Perfil");
+              //navigation.dispatch(StackActions.pop(1));
+
+              rerenderFunc(true);
             }
           })
         }
@@ -200,6 +206,7 @@ export default function NewPlate(props) {
 
     return (
         <View style={styles.container}>
+          <ScrollView style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
             <Text style={styles.title}>Novo prato</Text>
             <Image source={{ uri: imagePlate }} style={styles.image} />
 
@@ -233,7 +240,10 @@ export default function NewPlate(props) {
             <TouchableOpacity style={styles.addButton} onPress={handleAddPlate}>
                 <Text style={styles.buttonText}>ADICIONAR</Text>
             </TouchableOpacity>
-            <BottomTabNav></BottomTabNav>
+
+          </ScrollView>
+
+          <BottomTabNav></BottomTabNav>
         </View>
     );
 
@@ -328,5 +338,8 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
+  scrollView: {
+    width: '100%',
+  },
 });

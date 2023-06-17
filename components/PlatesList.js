@@ -15,13 +15,14 @@ export default function PlatesList({type}) {
   console.log("restaurantData[id]: ", restaurantData["id"]);
 
   const db = getFirestore(app);
+  const pratosRef = collection(db, 'restaurantes', restaurantData["id"], 'pratos');
   const navigation = useNavigation();
   const [plates, setPlates] = useState([]);
-  const [editMenu, setEditMenu] = useState("nao editando");
+  const [getData, setGetData] = useState(true);
 
 
   const getPlatesData = async () => {
-    const q = query(collection(db, 'restaurantes', restaurantData["id"], 'pratos'));
+    const q = query(pratosRef);
 
     const querySnapshot = await getDocs(q);
     let auxPlates = [];
@@ -35,11 +36,15 @@ export default function PlatesList({type}) {
     });
 
     setPlates(auxPlates);
+    //plates = auxPlates;
   };
 
   useEffect(() => {
-    getPlatesData()
-  })
+    if(getData){
+      getPlatesData();
+      setGetData(false);
+    }
+  }, [getData]);
 
   if(type !== "edit"){
     return (
@@ -68,21 +73,22 @@ export default function PlatesList({type}) {
 
   else {
     return (
-      <View style={styles.container}>
+      <View style={styles.editContainer}>
       
         <Text style={styles.title}>PRATOS</Text>
+        <Text style={styles.subTitle}>* Alterações nos pratos são salvas automaticamente</Text>
 
         <View style={styles.plates}>
         {plates.length !== 0 &&
             plates.map((prato, i) => {
-            return (
-                <PlateCard key={i} data={prato} cardType="edit" />
-            );
+              return (
+                  <PlateCard key={i} data={prato} cardType="edit" func={setGetData} pratosRef={pratosRef}/>
+              );
             })
         }
         </View>
 
-        <PlateCard cardType="add" />
+        <PlateCard cardType="add" func={setGetData} />
 
       </View>
     );
@@ -98,11 +104,29 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     backgroundColor: '#f9f1f7',
     marginTop: 20,
+    marginBottom: 25,
+  },
+  editContainer: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    backgroundColor: '#f9f1f7',
+    marginTop: 20,
+    marginBottom: '20%',
   },
   title: {
     fontSize: 30,
     marginTop: 15,
     marginBottom: 20,
+  },
+  subTitle: {
+    textAlign: 'center',
+    width: '100%',
+    fontSize: 20,
+    marginBottom: 20,
+    marginLeft: 20,
+    marginRight: 20,
   },
   plates: {
     alignItems: 'center',

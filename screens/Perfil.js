@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Alert, TextInput, StatusBar, TouchableOpacity, Image, ScrollView } from 'react-native';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import BottomTabNav from '../components/BottomTabNav';
 import {launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus, MediaTypeOptions} from 'expo-image-picker';
 import Context from '../Context';
@@ -26,6 +26,7 @@ export default function Perfil() {
 
   
   const [edit, setEdit] = useState(false);
+  const scrollRef = useRef();
   const initialImageUri = (userData.data["imageDownloadUrl"]) ? userData.data["imageDownloadUrl"] : exampleImageUri;
   const [image, setImage] = useState(initialImageUri);
 
@@ -193,7 +194,12 @@ export default function Perfil() {
       }
     }
 
+    
     setEdit(false);
+    scrollRef.current?.scrollTo({
+      y: 0,
+      animated: true,
+    });
   }
 
 
@@ -214,7 +220,7 @@ export default function Perfil() {
     if(userType === "clientes"){
       return (
         <View style={styles.container}>
-          <ScrollView style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
+          <ScrollView ref={scrollRef} style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
             <Text style={styles.title}>{userData.data["nome"]}</Text>
 
             <Image source={{ uri: image }} style={styles.image} />
@@ -223,7 +229,14 @@ export default function Perfil() {
             <Text style={styles.normalText}>{userData.data["rua"]}, {userData.data["numero"]}</Text>
             <Text style={styles.normalText}>{userData.data["telefone"]}</Text>
 
-            <TouchableOpacity style={styles.editButton} onPress={() => setEdit(true)}>
+            <TouchableOpacity style={styles.editButton} onPress={() => {
+                setEdit(true);
+                scrollRef.current?.scrollTo({
+                  y: 0,
+                  animated: true,
+                });
+              }
+            }>
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
             </TouchableOpacity>
 
@@ -244,7 +257,7 @@ export default function Perfil() {
     else if(userType === "restaurantes"){
       return (
         <View style={styles.container}>
-          <ScrollView style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
+          <ScrollView ref={scrollRef} style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
             <Text style={styles.title}>{userData.data["nome"]}</Text>
 
             <Image source={{ uri: image }} style={styles.image} />
@@ -255,7 +268,14 @@ export default function Perfil() {
               
             <PlatesList style={styles.plates}/>
 
-            <TouchableOpacity style={styles.editButton} onPress={() => setEdit(true)}>
+            <TouchableOpacity style={styles.editButton} onPress={() => {
+                setEdit(true);
+                scrollRef.current?.scrollTo({
+                  y: 0,
+                  animated: true,
+                });
+              }
+            }>
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
             </TouchableOpacity>
 
@@ -276,14 +296,21 @@ export default function Perfil() {
     else if(userType === "entregadores"){
       return (
         <View style={styles.container}>
-          <ScrollView style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
+          <ScrollView ref={scrollRef} style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
             <Text style={styles.title}>{userData.data["nome"]}</Text>
 
             <Image source={{ uri: image }} style={styles.image} />
 
             <Text style={styles.normalText}>{userData.data["telefone"]}</Text>
 
-            <TouchableOpacity style={styles.editButton} onPress={() => setEdit(true)}>
+            <TouchableOpacity style={styles.editButton} onPress={() => {
+                setEdit(true);
+                scrollRef.current?.scrollTo({
+                  y: 0,
+                  animated: true,
+                });
+              }
+            }>
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
             </TouchableOpacity>
 
@@ -308,7 +335,7 @@ export default function Perfil() {
     if(userType === "clientes"){
       return (
         <View style={styles.container}>
-          <ScrollView style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
+          <ScrollView ref={scrollRef} style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
             <Image source={{ uri: image }} style={styles.image} />
 
             <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
@@ -366,7 +393,7 @@ export default function Perfil() {
     else if(userType === "restaurantes"){
       return (
         <View style={styles.container}>
-          <ScrollView style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
+          <ScrollView ref={scrollRef} style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
             <Image source={{ uri: image }} style={styles.image} />
 
             <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
@@ -376,8 +403,6 @@ export default function Perfil() {
             <TouchableOpacity style={styles.galleryButton} onPress={pickImage}>
               <Text>Galeria</Text>
             </TouchableOpacity>
-            
-            <PlatesList style={styles.plates} type="edit"/>
 
             <TextInput
               style={styles.input}
@@ -410,9 +435,11 @@ export default function Perfil() {
               value={telefone}
             />
 
-            <TouchableOpacity style={styles.button} onPress={saveChanges}>
+            <TouchableOpacity style={styles.restaurantEditButton} onPress={saveChanges}>
               <Text style={styles.buttonText}>SALVAR</Text>
             </TouchableOpacity>
+
+            <PlatesList style={styles.plates} type="edit"/>
           
           </ScrollView>
 
@@ -426,7 +453,7 @@ export default function Perfil() {
     else if(userType === "entregadores"){
       return (
         <View style={styles.container}>
-          <ScrollView style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
+          <ScrollView ref={scrollRef} style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
             <Image source={{ uri: image }} style={styles.image} />
 
             <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
@@ -554,7 +581,6 @@ const styles = StyleSheet.create({
       alignItems:'center',
       alignSelf:'center',
       borderRadius: 30,
-      marginTop: 32,
     },
     button: {
       backgroundColor: 'black',
@@ -565,7 +591,18 @@ const styles = StyleSheet.create({
       alignSelf:'center',
       borderRadius: 30,
       marginTop: 32,
-      marginBottom: '30%'
+      marginBottom: "30%",
+    },
+    restaurantEditButton: {
+      backgroundColor: 'black',
+      padding: 15,
+      width: 200,
+      justifyContent: 'center', 
+      alignItems:'center',
+      alignSelf:'center',
+      borderRadius: 30,
+      marginTop: 32,
+      marginBottom: 20,
     },
     buttonText: {
       color: '#fcc40d',
