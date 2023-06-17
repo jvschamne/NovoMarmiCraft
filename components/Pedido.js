@@ -1,30 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from 'react-native';
 import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, where, query, getDocs } from 'firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
 import app from '../config/firebase';
-
+import Context from '../Context';
 const Pedido = ({ info, type }) => {
 
+  const navigation = useNavigation()
   const db = getFirestore(app);
-
-  const [status, setStatus] = useState(null);
+  const uId = useContext(Context).id[0];
+  const [status, setStatus] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [statusColor, setStatusColor] = useState(styles.blueBackground)
   const statusRestaurante = ['Aguardando entregador', 'Preparando', 'Entregando', 'Concluído'];
   const statusEntregador = ['Entregando', 'Concluído']
   
-  console.log("INFO:", info[1])
-  console.log("INFO:", info[1]["status"])
-  console.log("INFO:", info[1]["pedidos"])
-  console.log("INFO:", info[1]["precoTotal"])
-
+  console.log("INFO:", info)
+  console.log("Status:", status)
   useEffect(() => {
     if (type !== "clientes") {
       setStatus(info[1]["status"]);
     } else {
+      console.log(setStatus)
       setStatus(info[0]["status"]);
     }
-  }, [info, type]);
+  }, [status]);
 
   const handleClick = () => {
     setModalVisible(true);
@@ -56,7 +56,28 @@ const Pedido = ({ info, type }) => {
 
   };
 
+  const acceptPedido = async() => {
+    console.log("accept:", info[1])
+    try {
+      const pedidoId = info[0];
+      const entregadorId = uId; // Replace 'ID_DO_ENTREGADOR' with the actual ID of the delivery person
+      const pedidoRef = doc(db, 'pedidos', pedidoId);
+      const pedidoSnapshot = await getDoc(pedidoRef);
+  
+      if (pedidoSnapshot.exists()) {
+        await updateDoc(pedidoRef, { entregadorId, status: 'Entregando' });
+        console.log('Pedido atualizado com o ID do entregador:', entregadorId);
+      } else {
+        console.log('O pedido não existe.');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar o pedido:', error);
+    }
+    info[1]["status"] = "Entregando"
+    //setStatus("Entregando")
+  }
 
+  
   useEffect(() => {
     if(status === 'Concluído') setStatusColor(styles.greenBackground)
     if(status === 'Preparando') setStatusColor(styles.redBackground)
@@ -69,7 +90,6 @@ const Pedido = ({ info, type }) => {
     
 
     <View style={styles.pedido}>
-      
         <View style={styles.secao1}>
           <TouchableOpacity onPress={handleClick} style={[styles.pedidoStatus, statusColor]}>
             <Text style={{color: 'white', fontWeight: 'bold'}}>{status}</Text>
@@ -120,12 +140,11 @@ const Pedido = ({ info, type }) => {
   );
   }
   
-  else{
+  else if(type === "clientes"){
     return (
     
 
       <View style={styles.pedido}>
-        
           <View style={styles.secao1}>
             <View style={[styles.pedidoStatus, statusColor]}>
               <Text style={{color: 'white', fontWeight: 'bold'}}>{info[0]["status"]}</Text>
@@ -171,7 +190,77 @@ const Pedido = ({ info, type }) => {
             />}
            
           </View>
-        </Modal>
+              </Modal>
+      </View>
+    );
+  }
+  else{
+    return (
+    
+
+      <View style={styles.pedido}>
+          <View style={styles.secao1}>
+            <View style={[styles.pedidoStatus, statusColor]}>
+              <Text style={{color: 'white', fontWeight: 'bold'}}>{info[1]["status"]}</Text>
+            </View>
+            <Text style={styles.pedidoText}>{"Pedido: " + info[1]["pedido"]}</Text>
+            <Text style={styles.pedidoText}>{"Preço: " + info[1]["precoTotal"]}</Text>
+            <Text style={styles.pedidoText}>{"Endereço: " + info[1]["precoTotal"]}</Text>
+          </View>
+
+          {info[1]["status"] === "Aguardando entregador" &&
+          <TouchableOpacity style={styles.acceptButton} onPress={() => acceptPedido()}>
+            <Text style={{color: "white", fontWeight: 'bold',}}>Aceitar pedido</Text>
+          </TouchableOpacity>
+          }
+          {info[1]["status"] !== "Aguardando entregador" &&
+          <TouchableOpacity style={styles.acceptButton} onPress={() =>{
+            const auxPorra = info
+            console.log(auxPorra)
+            navigation.navigate('PedidoInfo', auxPorra)
+            
+            }}>
+            <Text style={{color: "white", fontWeight: 'bold',}}>Detalhes do pedido</Text>
+          </TouchableOpacity>
+          }
+        
+  
+        
+
+        <Modal visible={modalVisible} animationType="fade" transparent>
+          <View style={styles.modalContainer}>
+            {type === "restaurante" &&
+              <FlatList
+              contentContainerStyle={styles.flatList}
+              data={statusRestaurante}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.statusOption}
+                  onPress={() => handleStatusSelect(item)}
+                >
+                  <Text>{item}</Text>
+                </TouchableOpacity>
+              )}
+            />}
+            {type === "entregador" &&
+              <FlatList
+            
+              contentContainerStyle={styles.flatList}
+              data={statusEntregador}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.statusOption}
+                  onPress={() => handleStatusSelect(item)}
+                >
+                  <Text style={{fontWeight: 'bold', fontSize: 30}}>{item}</Text>
+                </TouchableOpacity>
+              )}
+            />}
+           
+          </View>
+              </Modal>
       </View>
     );
   }
@@ -182,7 +271,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     margin: 10,
     width: '90%',
-    height: 200,
+    height: 250,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
@@ -235,6 +324,11 @@ const styles = StyleSheet.create({
   },
   yellowBackground: {
     backgroundColor: 'purple'
+  },
+  acceptButton:{
+    backgroundColor: "green",
+    padding: 10,
+    borderRadius: 15,
   }
 
 

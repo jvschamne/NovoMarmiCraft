@@ -7,12 +7,15 @@ import { useNavigation } from '@react-navigation/native';
 import { useState, useContext, useEffect } from 'react';
 import Context from '../Context';
 import app from '../config/firebase';
+import * as Location from 'expo-location';
 
 export default function Carrinho(props) {
     const data = props.route.params
     const restaurantData = data[0]
     const [pedidos, setPedidos] = useState(data[1])
     const [preco, setPreco] = useState(0)
+
+    const [location, setLocation] = useState(null)
 
     console.log("RESTAURANTE DATA CARRINHO: ", restaurantData)
     const [uId, setUId] = useContext(Context).id;
@@ -37,9 +40,29 @@ export default function Carrinho(props) {
             })
         }
     }
+
+    const getLocation = async () => {
+        try {
+          const { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            console.log('Permissão de localização negada');
+            return;
+          } 
+      
+          const location = await Location.getCurrentPositionAsync({});
+          const { latitude, longitude } = location.coords;
+          console.log('Latitude:', latitude);
+          console.log('Longitude:', longitude);
+
+          setLocation([latitude, longitude])
+        } catch (error) {
+          console.log('Erro ao obter a localização:', error);
+        }
+      };
     
     const handleBuyButton = async () => {
 
+        getLocation()
 
         let nomesPedidos = []
         let precoPedidos = 0
@@ -65,7 +88,10 @@ export default function Carrinho(props) {
             precoTotal: precoPedidos,
             clienteId: uId,
             status: "Preparando",
-            restauranteId: restaurantData["id"],
+            restauranteId: restaurantData["id"], 
+            entregadorId: "",
+            latitude: location[0],
+            longitude: location[1],
           });
           
           // Obtenha o ID do novo pedido
@@ -95,6 +121,7 @@ export default function Carrinho(props) {
         setPedidos(novosPedidos);
     }
 
+    
 
     useEffect(() => {
         getCardData()
@@ -148,8 +175,12 @@ export default function Carrinho(props) {
                         }}
                     />
                     </View>
-                    <Text style={styles.label}>Gorjeta ao entregador</Text>
-          <TextInput style={styles.input} />
+
+                    {/*<TouchableOpacity style={styles.checkoutButton} onPress={getLocation}>
+                        <Text style={styles.buttonText}>Pegar localização</Text>
+                    </TouchableOpacity>*/}
+
+                    
           <Text style={styles.total}>Total a pagar: R${preco}</Text>
           <TouchableOpacity style={styles.checkoutButton} onPress={handleBuyButton}>
             <Text style={styles.buttonText}>Finalizar pedido</Text>

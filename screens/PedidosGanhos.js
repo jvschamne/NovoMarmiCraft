@@ -83,7 +83,7 @@ export default function PedidosGanhos(props) {
                 }
                 </ScrollView>
 
-              
+               
               
               <BottomTabNav userData={userData} userType={userType}></BottomTabNav>
             </View>

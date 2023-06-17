@@ -13,10 +13,13 @@
     "@react-navigation/stack": "^6.3.16",
     "expo": "~48.0.15",
     "expo-image-picker": "~14.1.1",
+    "expo-location": "^15.1.1",
     "expo-status-bar": "~1.4.4",
     "firebase": "^9.22.0",
     "react": "18.2.0",
     "react-native": "0.71.8",
+    "react-native-geolocation-service": "^5.3.1",
+    "react-native-maps": "^1.7.1",
     "react-native-select-dropdown": "^3.3.4",
     "react-native-table-component": "^1.2.2"
   },

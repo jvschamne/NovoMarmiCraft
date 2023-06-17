@@ -10,6 +10,7 @@ import Perfil from './screens/Perfil';
 import Carrinho from './screens/Carrinho';
 import Reviews from './screens/Reviews';
 import PedidosGanhos from './screens/PedidosGanhos';
+import PedidoInfo from './screens/PedidoInfo';
 import { LogBox } from 'react-native';
 import Context from './Context';
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -41,6 +42,7 @@ const App = () => {
           <Stack.Screen name="Perfil" component={Perfil} />
           <Stack.Screen name="Reviews" component={Reviews} />
           <Stack.Screen name="PedidosGanhos" component={PedidosGanhos} />
+          <Stack.Screen name="PedidoInfo" component={PedidoInfo} />
         </Stack.Navigator>
       </NavigationContainer>
     </Context.Provider>

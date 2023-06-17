@@ -94,17 +94,18 @@ export default function Menu() {
   
       //console.log("---------ETAPA1");
       const pedidosRef = collection(db, 'pedidos');
-      //console.log(uId);
+      //console.log(uId); 
       const q = query(pedidosRef, where('restauranteId', '==', uId));
+
       //console.log("---------ETAPA2");
       //console.log("Q:", q)
       const auxPedidos = [];
   
       const querySnapshot = await getDocs(q);
       //console.log("try2:", querySnapshot);
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach((doc) => { 
         //console.log('ID do pedido:', doc.id);
-        //console.log('Dados do pedido:', doc.data());
+        //console.log('Dados do pedido:', doc.data()); 
         auxPedidos.push([doc.id, doc.data()]);
       });
       //console.log("try3");
@@ -121,23 +122,38 @@ export default function Menu() {
     console.log("-------------getPedidosEntregador----")
     try {
       console.log("getPedidosEntregador");
-  
       console.log("---------ETAPA1");
       const pedidosRef = collection(db, 'pedidos');
-      console.log(uId);
-      const q = query(pedidosRef);
-      console.log("---------ETAPA2");
-      console.log("Q:", q);
+      console.log(uId); 
+      
+      //pedidos entregando atual
+      const q = query(pedidosRef,
+        //where('status', '==', 'Aguardando entregador'),
+        where('entregadorId', '==', uId)
+      );
+      console.log("---------ETAPA2"); 
       const auxPedidos = [];
   
       const querySnapshot = await getDocs(q);
-      console.log("try2:", querySnapshot);
+      
       querySnapshot.forEach((doc) => {
-        console.log('ID do pedido:', doc.id);
+        console.log('ID do pedido:', doc.id); 
         console.log('Dados do pedido:', doc.data());
         auxPedidos.push([doc.id, doc.data()]);
       });
-      console.log("try3");
+     
+      //pedidos disponiveis na area
+      const q2 = query(pedidosRef,
+        where('status', '==', 'Aguardando entregador')
+      );
+     
+      const querySnapshot2 = await getDocs(q2);
+      querySnapshot2.forEach((doc) => {
+        console.log('ID do pedido:', doc.id); 
+        console.log('Dados do pedido:', doc.data());
+        auxPedidos.push([doc.id, doc.data()]);
+      });
+  
   
       setPedidosEntregador(auxPedidos);
   
@@ -146,16 +162,6 @@ export default function Menu() {
     }
   };
   
-  
-
-
-
-  /*useEffect(() => {
-    getUserType();
-    if(userType === "clientes") getPedidosRestaurante();
-    else if (userType === "entregadores") getPedidosEntregador()
-    console.log(pedidosRestaurante.length)
-  }, []);*/
 
   useEffect(() => {
     getUserType();
@@ -164,7 +170,6 @@ export default function Menu() {
   }, []);
   
   useEffect(() => {
-    getUserType();
     getPedidosEntregador()
     //console.log('pedidosEntregador:', pedidosEntregador);
   }, []);
@@ -204,7 +209,7 @@ export default function Menu() {
   else if (userType === "entregadores") {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Entregador</Text>
+        <Text style={styles.title}>Pedidos disponíveis</Text>
         <ScrollView style={styles.pedidos} contentContainerStyle={styles.scrollViewContent}>
           {(pedidosEntregador.length !== 0) &&
             pedidosEntregador.map((info, i) => <Pedido key={i} info={info} type={'entregador'} />)
