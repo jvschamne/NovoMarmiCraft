@@ -1,19 +1,36 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { doc, collection, deleteDoc } from "firebase/firestore";
 
-export default function PlateCard ({data, cardType}) {
+export default function PlateCard ({data, cardType, func, pratosRef}) {
     const dados = data;
-    console.log("--- PLATE CARD: ", dados["nome"], " ----");
+    console.log("\n\n\n--- PLATE CARD ----");
+    console.log("--- data: ", data, " ----");
     const navigation = useNavigation();
 
-    const handleLogin = () => {
-        console.log('ok')
-        //navigation.navigate('Restaurant', dados);
+    const handleAdd = () => {
+        console.log('add Plate')
+        navigation.navigate('NewPlate', {"rerenderFunc": func});
+    };
+
+    const handleEdit = () => {
+        console.log('edit Plate')
+        navigation.navigate('EditPlate', {"plate": dados, "rerenderFunc": func});
+    };
+
+    const handleDelete = async () => {
+        console.log("Excluindo prato ", dados["id"]);
+        await deleteDoc(doc(pratosRef, dados["id"]))
+        .then(() => {
+            console.log(dados["id"], " excluído com sucesso");
+            func(true);
+            navigation.navigate("Perfil");
+        }); 
     };
     
     if(cardType === "add"){
         return(
-            <TouchableOpacity style={styles.card} onPress={handleLogin}>
+            <TouchableOpacity style={styles.card} onPress={handleAdd}>
                 <Image source={require('../assets/plus-icon.png')} style={styles.image}/>
                 <Text style={{fontSize: 15, marginLeft: 30}}>
                     ADICIONAR PRATO
@@ -22,33 +39,76 @@ export default function PlateCard ({data, cardType}) {
         );
     }
 
-    else if(cardType === "edit"){
+    else if(cardType === "edit"){ 
         return(
-            <TouchableOpacity style={styles.card} onPress={handleLogin}>
-                <Image source={require('../assets/edit-icon.png')} style={styles.image}/>
-                <Text style={{fontSize: 15, marginLeft: 30}}>
-                    {dados["nome"]}
-                </Text>
-            </TouchableOpacity>
+            <View style={styles.card}>
+                <Image source={{ uri: dados["imagePlateUrl"] }} style={styles.image}/>
+                <View>
+                    <Text style={styles.cardTitle}>
+                        {dados["nome"]}
+                    </Text>
+                    <Text style={styles.priceText}>
+                        R${dados["preco"]}
+                    </Text>
+                </View>
+                <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+                    <Image source={require('../assets/edit-icon.png')} style={styles.editIcon}/>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.excludeButton} onPress={handleDelete}>
+                    <Image source={require('../assets/trash-icon.png')} style={styles.trashIcon}/>
+                </TouchableOpacity>
+            </View>
         );
     }
 
     return(
-        <TouchableOpacity style={styles.card} onPress={handleLogin}>
-            <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png'}} style={styles.image}/>
-            <Text style={{fontSize: 15, marginLeft: 30}}>
-                {dados["nome"]}
-            </Text>
-        </TouchableOpacity>
+        <View style={styles.card}>
+            <Image source={{ uri: dados["imagePlateUrl"]}} style={styles.image}/>
+            <View>
+                <Text style={styles.cardTitle}>
+                    {dados["nome"]}
+                </Text>
+                <Text style={styles.priceText}>
+                    R${dados["preco"]}
+                </Text>
+            </View>
+        </View>
     );
     
 }
 
 const styles = StyleSheet.create({
     image: {
+        marginLeft: 15,
+        width: 70, 
+        height: 70,
+        borderRadius: 10,
+    },
+    editIcon: {
+        height: 25,
+        width: 25,
+    },
+    editButton: {
+        position: 'absolute',
+        right: 15,
+    },
+    trashIcon: {
+        height: 25,
+        width: 25,
+    },
+    excludeButton: {
+        position: 'absolute',
+        right: 50,
+    },
+    cardTitle: {
         marginLeft: 20,
-        width: 50, 
-        height: 50
+        marginBottom: 10,
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    priceText: {
+        marginLeft: 35,
+        fontSize: 18,
     },
     card: {
         flexDirection: 'row',

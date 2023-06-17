@@ -11,6 +11,7 @@ import Carrinho from './screens/Carrinho';
 import Reviews from './screens/Reviews';
 import PedidosGanhos from './screens/PedidosGanhos';
 import PedidoInfo from './screens/PedidoInfo';
+import NewPlate from './screens/NewPlate';
 import { LogBox } from 'react-native';
 import Context from './Context';
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -19,6 +20,8 @@ LogBox.ignoreAllLogs(); //Ignore all log notifications
 //firebase
 import app from './config/firebase';
 import { getFirestore, collection, doc, setDoc, getDoc } from 'firebase/firestore';
+import EditPlate from './screens/EditPlate';
+
 const db = getFirestore(app);
 
 const App = () => {
@@ -26,7 +29,6 @@ const App = () => {
   const [userType, setUserType] = useState("");
   const [userId, setUserId] = useState("");
   const Stack = createStackNavigator();
-
  
   return (
 
@@ -35,7 +37,7 @@ const App = () => {
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Carrinho" component={Carrinho} />
-          <Stack.Screen name="Menu" component={Menu} />
+          <Stack.Screen name="Menu" component={Menu}  options={{gestureEnabled: false}}/>
           <Stack.Screen name="Restaurant" component={Restaurant} />
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="Register" component={Register} />
@@ -43,6 +45,8 @@ const App = () => {
           <Stack.Screen name="Reviews" component={Reviews} />
           <Stack.Screen name="PedidosGanhos" component={PedidosGanhos} />
           <Stack.Screen name="PedidoInfo" component={PedidoInfo} />
+          <Stack.Screen name="NewPlate" component={NewPlate} />
+          <Stack.Screen name="EditPlate" component={EditPlate} />
         </Stack.Navigator>
       </NavigationContainer>
     </Context.Provider>

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Alert, TextInput, StatusBar, TouchableOpacity, Image, ScrollView } from 'react-native';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import BottomTabNav from '../components/BottomTabNav';
 import {launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus, MediaTypeOptions} from 'expo-image-picker';
 import Context from '../Context';
@@ -9,6 +9,7 @@ import app from '../config/firebase';
 import PlateCard from '../components/PlateCard';
 import exampleImage from '../assets/profile-icon.png';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import PlatesList from '../components/PlatesList';
 const exampleImageUri = Image.resolveAssetSource(exampleImage).uri;
 
 
@@ -25,18 +26,23 @@ export default function Perfil() {
 
  
   const [edit, setEdit] = useState(false);
-  const initialImageUri = (userData["imageDownloadUrl"]) ? userData["imageDownloadUrl"] : exampleImageUri;
+  const scrollRef = useRef();
+  const initialImageUri = (userData.data["imageDownloadUrl"]) ? userData.data["imageDownloadUrl"] : exampleImageUri;
   const [image, setImage] = useState(initialImageUri);
 
   const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
 
-  const [name, setName] = useState(userData["nome"]);
+  const [platesAdded, setPlatesAdded] = useState(false);
+
+  const [name, setName] = useState(userData.data["nome"]);
   //const [email, setEmail] = useState(userData["e-mail"]);
-  const [neighbourhood, setNeighbourhood] = useState(userData["bairro"]);
-  const [street, setStreet] = useState(userData["rua"]);
-  const [number, setNumber] = useState(userData["numero"]);
-  const [telefone, setTelefone] = useState(userData["telefone"]);
-  const [imageDownloadUrl, setImageDownloadUrl] = (userData["imageDownloadUrl"]) ? useState(userData["imageDownloadUrl"]) : useState("");
+
+  const [neighbourhood, setNeighbourhood] = useState(userData.data["bairro"]);
+  const [street, setStreet] = useState(userData.data["rua"]);
+  const [number, setNumber] = useState(userData.data["numero"]);
+  const [pixEntregador, setPixEntregador] = useState(userData.data["chave PIX"]);
+  const [telefone, setTelefone] = useState(userData.data["telefone"]);
+  const [imageDownloadUrl, setImageDownloadUrl] = (userData.data["imageDownloadUrl"]) ? useState(userData.data["imageDownloadUrl"]) : useState("");
 
 
   //dados bancarios
@@ -50,15 +56,9 @@ export default function Perfil() {
   const [numeroCartao, setNumeroCartao] = useState('')
   const [dataValidade, setDataValidade] = useState('')
   const [cvv, setCVV] = useState('')
-  const [pix, setPix] = useState('')
+  const [pixCliente, setPixCliente] = useState('')
 
-
-  //console.log("\n\n\n------TELA PERFIL------\nIMAGE DOWNLOAD URL: ", imageDownloadUrl);
-  /*console.log("IMAGE URI: ", image);
-  console.log("initialImageUri: "+initialImageUri);
-  console.log("edit mode - setEdit = "+edit+"\n\n\n");*/
-
-
+  // pix dados bancarios
   const getDadosBancarios = async () => {
     const querySnapshot = await getDocs(dadosBancariosRef);
     console.log('GET DADOS BANCARIOS')
@@ -67,7 +67,7 @@ export default function Perfil() {
       querySnapshot.forEach((doc) => {
         console.log("Documento já existe. Atualizando...");
         console.log(doc.data());
-        setPix(doc.data().pix)
+        setPixCliente(doc.data().pixCliente)
 
         setCVV(doc.data().CVV)
         setDataValidade(doc.data().dataValidade)
@@ -78,15 +78,22 @@ export default function Perfil() {
 
   useEffect(() => {
     const updateImageData = async () => {
+
       //console.log("USE EFFECT - IMAGE DOWNLOAD URL ALTERADO!!!")
-      if(!userData["imageDownloadUrl"] || (userData["imageDownloadUrl"] && imageDownloadUrl!=="")){
+      //if(!userData["imageDownloadUrl"] || (userData["imageDownloadUrl"] && imageDownloadUrl!=="")){
+
+      console.log("USE EFFECT - IMAGE DOWNLOAD URL ALTERADO!!!")
+      if(imageDownloadUrl!=="" && imageDownloadUrl!==userData.data["imageDownloadUrl"]){
         await updateDoc(userDocRef, {
           "imageDownloadUrl": imageDownloadUrl,
         });
   
         const docSnapUser = await getDoc(userDocRef);
         if (docSnapUser.exists()) {
-          setUserData(docSnapUser.data());
+          setUserData({
+            data: docSnapUser.data(),
+            id: userData.id
+          });
         }
 
       }
@@ -129,7 +136,7 @@ export default function Perfil() {
     const result = await launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0,
+      quality: 0.1,
     });
 
     //console.log(result);
@@ -196,12 +203,20 @@ export default function Perfil() {
     if(image !== initialImageUri){
       await uploadImage();
     }
-   
+    
+    /*
     if(neighbourhood!==userData["bairro"] 
     || name!==userData["nome"] 
     || number!==userData["numero"] 
     || street!==userData["rua"] 
     || telefone!==userData["telefone"]){
+    */
+    
+    if(neighbourhood!==userData.data["bairro"] 
+    || name!==userData.data["nome"] 
+    || number!==userData.data["numero"] 
+    || street!==userData.data["rua"] 
+    || telefone!==userData.data["telefone"]){
       await updateDoc(userDocRef, {
         "bairro": neighbourhood,
         "nome": name, 
@@ -212,10 +227,12 @@ export default function Perfil() {
 
       const docSnapUser = await getDoc(userDocRef);
       if (docSnapUser.exists()) {
-        setUserData(docSnapUser.data());
+        setUserData({
+          data: docSnapUser.data(),
+          id: userData.id
+        });
       }
     }
-
 
     console.log('-------------ETAPA 1');
     const dadosBancariosRef = collection(db, 'clientes', uId, 'dadosBancarios');
@@ -232,7 +249,7 @@ export default function Perfil() {
 
         // Faça as atualizações necessárias
         const updatedData = {
-          pix: pix,
+          pix: pixCliente,
           nomeTitular: nomeTitular,
           numeroCartao: numeroCartao,
           dataValidade: dataValidade,
@@ -251,7 +268,7 @@ export default function Perfil() {
       // Documento não existe, crie um novo
       console.log("Documento não existe. Criando novo...");
       const newDocumentData = {
-        pix: pix,
+          pix: pixCliente,
           nomeTitular: nomeTitular,
           numeroCartao: numeroCartao,
           dataValidade: dataValidade,
@@ -265,22 +282,21 @@ export default function Perfil() {
         .catch((error) => {
           console.error('Erro ao adicionar novos dados bancários:', error);
         });
-  }
+    }
 
-  console.log('-------------ETAPA 3');
+    console.log('-------------ETAPA 3');
 
-  setEdit(false);
+    setEdit(false);
+
+    scrollRef.current?.scrollTo({
+      y: 0,
+      animated: true,
+    });
 
   }
 
 
   const handleExit = () => {
-    /*
-    setUserData({})
-    setUserType("");
-    setUId("");
-    navigation.navigate("Login")
-    */
     navigation.reset({
         index: 0,
         routes: [
@@ -297,16 +313,23 @@ export default function Perfil() {
     if(userType === "clientes"){
       return (
         <View style={styles.container}>
-          <ScrollView style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
-            <Text style={styles.title}>{userData["nome"]}</Text>
+          <ScrollView ref={scrollRef} style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
+            <Text style={styles.title}>{userData.data["nome"]}</Text>
 
             <Image source={{ uri: image }} style={styles.image} />
 
-            <Text style={styles.normalText}>{userData["bairro"]}</Text>
-            <Text style={styles.normalText}>{userData["rua"]}, {userData["numero"]}</Text>
-            <Text style={styles.normalText}>{userData["telefone"]}</Text>
+            <Text style={styles.normalText}>{userData.data["bairro"]}</Text>
+            <Text style={styles.normalText}>{userData.data["rua"]}, {userData.data["numero"]}</Text>
+            <Text style={styles.normalText}>{userData.data["telefone"]}</Text>
 
-            <TouchableOpacity style={styles.editButton} onPress={() => setEdit(true)}>
+            <TouchableOpacity style={styles.editButton} onPress={() => {
+                setEdit(true);
+                scrollRef.current?.scrollTo({
+                  y: 0,
+                  animated: true,
+                });
+              }
+            }>
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
             </TouchableOpacity>
 
@@ -327,24 +350,60 @@ export default function Perfil() {
     else if(userType === "restaurantes"){
       return (
         <View style={styles.container}>
-          <ScrollView style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
-            <Text style={styles.title}>{userData["nome"]}</Text>
+          <ScrollView ref={scrollRef} style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
+            <Text style={styles.title}>{userData.data["nome"]}</Text>
 
             <Image source={{ uri: image }} style={styles.image} />
 
-            <Text style={styles.normalText}>{userData["bairro"]}</Text>
-            <Text style={styles.normalText}>{userData["rua"]}, {userData["numero"]}</Text>
-            <Text style={styles.normalText}>{userData["telefone"]}</Text>
-
-            <View style={styles.menu}>
+            <Text style={styles.normalText}>{userData.data["bairro"]}</Text>
+            <Text style={styles.normalText}>{userData.data["rua"]}, {userData.data["numero"]}</Text>
+            <Text style={styles.normalText}>{userData.data["telefone"]}</Text>
               
-              <TouchableOpacity style={styles.menuItemButton}>
-                <PlateCard style={styles.menuItem} data={{"nome" : "prato"}}/>
-              </TouchableOpacity>
+            <PlatesList style={styles.plates}/>
 
-            </View>
+            <TouchableOpacity style={styles.editButton} onPress={() => {
+                setEdit(true);
+                scrollRef.current?.scrollTo({
+                  y: 0,
+                  animated: true,
+                });
+              }
+            }>
+              <Text style={styles.buttonText}>EDITAR PERFIL</Text>
+            </TouchableOpacity>
 
-            <TouchableOpacity style={styles.editButton} onPress={() => setEdit(true)}>
+            <TouchableOpacity style={styles.button} onPress={handleExit}>
+              <Text style={styles.buttonText}>SAIR</Text>
+            </TouchableOpacity>
+
+          </ScrollView>
+
+          
+
+          <StatusBar style="auto" />
+          <BottomTabNav></BottomTabNav>
+
+        </View>
+      );
+    }
+    else if(userType === "entregadores"){
+      return (
+        <View style={styles.container}>
+          <ScrollView ref={scrollRef} style={styles.scrollView}  contentContainerStyle={{alignItems: 'center'}}>
+            <Text style={styles.title}>{userData.data["nome"]}</Text>
+
+            <Image source={{ uri: image }} style={styles.image} />
+
+            <Text style={styles.normalText}>{userData.data["telefone"]}</Text>
+
+            <TouchableOpacity style={styles.editButton} onPress={() => {
+                setEdit(true);
+                scrollRef.current?.scrollTo({
+                  y: 0,
+                  animated: true,
+                });
+              }
+            }>
               <Text style={styles.buttonText}>EDITAR PERFIL</Text>
             </TouchableOpacity>
 
@@ -369,7 +428,7 @@ export default function Perfil() {
     if(userType === "clientes"){
       return (
         <View style={styles.container}>
-          <ScrollView style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
+          <ScrollView ref={scrollRef} style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
             <Image source={{ uri: image }} style={styles.image} />
 
             <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
@@ -414,8 +473,8 @@ export default function Perfil() {
             <TextInput
               style={styles.input}
               placeholder="PIX"
-              onChangeText={text => setPix(text)}
-              value={pix}
+              onChangeText={text => setPixCliente(text)}
+              value={pixCliente}
             />
             <TextInput
               style={styles.input}
@@ -459,7 +518,7 @@ export default function Perfil() {
     else if(userType === "restaurantes"){
       return (
         <View style={styles.container}>
-          <ScrollView style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
+          <ScrollView ref={scrollRef} style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
             <Image source={{ uri: image }} style={styles.image} />
 
             <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
@@ -470,14 +529,84 @@ export default function Perfil() {
               <Text>Galeria</Text>
             </TouchableOpacity>
 
-            <View style={styles.menu}>
-              
-              <TouchableOpacity style={styles.menuItemButton}>
-                <PlateCard style={styles.menuItem} data={{"nome" : "prato"}} cardType="add"/>
-              </TouchableOpacity>
+            <TextInput
+              style={styles.input}
+              placeholder="Nome"
+              onChangeText={text => setName(text)}
+              value={name}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Bairro"
+              onChangeText={text => setNeighbourhood(text)}
+              value={neighbourhood}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Rua"
+              onChangeText={text => setStreet(text)}
+              value={street}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Número"
+              onChangeText={text => setNumber(text)}
+              value={number}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Telefone (DD XXXXX-XXXX) "
+              onChangeText={text => setTelefone(text)}
+              value={telefone}
+            />
 
-            </View>
+            <TouchableOpacity style={styles.restaurantEditButton} onPress={saveChanges}>
+              <Text style={styles.buttonText}>SALVAR</Text>
+            </TouchableOpacity>
 
+            <PlatesList style={styles.plates} type="edit"/>
+          
+          </ScrollView>
+
+
+          <StatusBar style="auto" />
+          <BottomTabNav style={styles.bottomBar}></BottomTabNav>
+          
+        </View>
+      );
+    }
+    else if(userType === "entregadores"){
+      return (
+        <View style={styles.container}>
+          <ScrollView ref={scrollRef} style={styles.scrollView} contentContainerStyle={{alignItems: 'center'}}>
+            <Image source={{ uri: image }} style={styles.image} />
+
+            <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
+              <Text>Tirar foto</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.galleryButton} onPress={pickImage}>
+              <Text>Galeria</Text>
+            </TouchableOpacity>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Nome"
+              onChangeText={text => setName(text)}
+              value={name}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Chave PIX"
+              onChangeText={text => setPixEntregador(text)}
+              value={pixEntregador}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Telefone (DD XXXXX-XXXX) "
+              onChangeText={text => setTelefone(text)}
+              value={telefone}
+            />
 
             <TouchableOpacity style={styles.button} onPress={saveChanges}>
               <Text style={styles.buttonText}>SALVAR</Text>
@@ -492,6 +621,7 @@ export default function Perfil() {
         </View>
       );
     }
+    
   }
 
 
@@ -504,6 +634,14 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       flex: 1,
       backgroundColor: '#fcc40d',
+    },
+    menu: {
+      flex: 1,
+      alignItems: "center",
+      width: "100%",
+      justifyContent: "flex-start",
+      backgroundColor: "lightgray",
+      paddingTop: 20,
     },
     scrollView: {
       width: '100%',
@@ -544,6 +682,11 @@ const styles = StyleSheet.create({
       justifyContent:'center',
       alignItems: 'center'
     },
+    plates: {
+      flex: 1,
+      width: '100%',
+      marginTop: 10,
+    },
     image: {
       alignSelf: 'center',
       padding: 130,
@@ -563,7 +706,6 @@ const styles = StyleSheet.create({
       alignItems:'center',
       alignSelf:'center',
       borderRadius: 30,
-      marginTop: 32,
     },
     button: {
       backgroundColor: 'black',
@@ -574,23 +716,23 @@ const styles = StyleSheet.create({
       alignSelf:'center',
       borderRadius: 30,
       marginTop: 32,
-      marginBottom: '30%'
+      marginBottom: "30%",
+    },
+    restaurantEditButton: {
+      backgroundColor: 'black',
+      padding: 15,
+      width: 200,
+      justifyContent: 'center', 
+      alignItems:'center',
+      alignSelf:'center',
+      borderRadius: 30,
+      marginTop: 32,
+      marginBottom: 20,
     },
     buttonText: {
       color: '#fcc40d',
       fontWeight: 'bold',
       fontSize: 16,
-    },
-    menu: {
-      marginTop: 10,
-      paddingTop: 40,
-      paddingBottom: 40,
-      backgroundColor: 'gray',
-      width: '100%',
-    },
-    menuItemButton: {
-      width: '100%',
-      alignItems: 'center',
     },
     menuItem: {
       backgroundColor: 'white',

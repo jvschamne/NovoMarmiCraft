@@ -42,6 +42,7 @@ export default function LoginScreen() {
 
         //navega para dentro do app
         setLoggedIn(true)
+        
         navigation.navigate('Menu');
       })
       .catch((error) => {
