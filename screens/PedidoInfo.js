@@ -1,94 +1,76 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
-import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 
 export default function PedidoInfo(props) {
-   
-  const info = props.route.params
-  console.log("INFO:", info)
+  const info = props.route.params;
+  console.log("INFO:", info);
 
-  const [location, setLocation] = useState([
-    -25.436265,
-    -49.269434,
-  ])
+  const [location, setLocation] = useState([0, 0]);
+  const [isLocationObtained, setLocationObtained] = useState(false);
 
-  const getLocation = async () => {
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permissão de localização negada');
-        return;
-      } 
-  
-      const location = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = location.coords;
-      console.log('Latitude:', latitude);
-      console.log('Longitude:', longitude);
+  useEffect(() => {
+    const getLocation = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.log('Permissão de localização negada');
+          return;
+        }
 
-      setLocation([latitude, longitude])
-    } catch (error) {
-      console.log('Erro ao obter a localização:', error);
-    }
-  };
+        const location = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = location.coords;
 
+        setLocation([latitude, longitude]);
+        setLocationObtained(true);
+      } catch (error) {
+        console.log('Erro ao obter a localização:', error);
+      }
+    };
 
-
+    getLocation();
+  }, []);
 
   const initialRegion = {
-    latitude: location[0],
-    longitude: location[1] + 0.002,
+    latitude: isLocationObtained ? location[0] : 0,
+    longitude: isLocationObtained ? location[1] : 0,
     latitudeDelta: 0.01,
     longitudeDelta: 0.01,
   };
 
-
   const initialMarkerCoordinate = {
-    latitude: location[0] + 0.01,
-    longitude: location[1] + 0.002,
+    latitude: isLocationObtained ? location[0] : 0,
+    longitude: isLocationObtained ? location[1] : 0,
   };
 
   let finalMarkerCoordinate = null;
-  if (info[1]["latitude"] !== undefined && info[1]["latitude"] !== null) {
+  if (info[1]['latitude'] !== undefined && info[1]['latitude'] !== null) {
     finalMarkerCoordinate = {
-      latitude: info[1]["latitude"],
-      longitude: info[1]["longitude"],
+      latitude: info[1]['latitude'],
+      longitude: info[1]['longitude'],
     };
   } else {
     finalMarkerCoordinate = {
       latitude: -25.438748,
-      longitude: -49.262370,
+      longitude: -49.26237,
     };
   }
 
-
-  const polylineCoordinates = [
-    initialMarkerCoordinate, // Ponto inicial
-    finalMarkerCoordinate, // Ponto final
-  ];
-  
-  useEffect(() => {
-    getLocation()
-  }, [])
+  const polylineCoordinates = [initialMarkerCoordinate, finalMarkerCoordinate];
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Informações do Pedido:</Text>
       <View>
-        <Text style={styles.pedidoText}>{info[1]["pedido"]}</Text>
+        <Text style={styles.pedidoText}>{info[1]['pedido']}</Text>
       </View>
-      
-      <MapView style={styles.map} initialRegion={initialRegion}>
-        <Marker coordinate={initialMarkerCoordinate} />
-        <Marker coordinate={finalMarkerCoordinate} />
-        <Polyline
-          coordinates={polylineCoordinates}
-          strokeWidth={2}
-          strokeColor="red"
-        />
-      </MapView>
 
+      <MapView style={styles.map} initialRegion={initialRegion}>
+        {isLocationObtained && <Marker coordinate={initialMarkerCoordinate} />}
+        <Marker coordinate={finalMarkerCoordinate} />
+        <Polyline coordinates={polylineCoordinates} strokeWidth={2} strokeColor="red" />
+      </MapView>
     </View>
   );
 }
@@ -109,7 +91,7 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
     width: '80%',
-    height: '60%'
+    height: '60%',
   },
   pedidoText: {
     margin: 10,

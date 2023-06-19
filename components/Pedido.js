@@ -24,7 +24,7 @@ const Pedido = ({ info, type }) => {
       console.log(setStatus)
       setStatus(info[0]["status"]);
     }
-  }, [status]);
+  }, [info]);
 
   const handleClick = () => {
     setModalVisible(true);
@@ -44,6 +44,15 @@ const Pedido = ({ info, type }) => {
       if (pedidoSnapshot.exists()) {
         await updateDoc(pedidoRef, { status: newStatus });
         console.log('Status do pedido atualizado com sucesso.');
+
+        // Update the status in the info array
+        if (type !== 'clientes') {
+          info[1]['status'] = newStatus;
+        } else {
+          info[0]['status'] = newStatus;
+        }
+
+
         return true;
       } else {
         console.log('O pedido não existe.');
@@ -74,7 +83,7 @@ const Pedido = ({ info, type }) => {
       console.error('Erro ao atualizar o pedido:', error);
     }
     info[1]["status"] = "Entregando"
-    //setStatus("Entregando")
+    setStatus("Entregando")
   }
 
   
@@ -146,15 +155,20 @@ const Pedido = ({ info, type }) => {
 
       <View style={styles.pedido}>
           <View style={styles.secao1}>
+            
+            
             <View style={[styles.pedidoStatus, statusColor]}>
               <Text style={{color: 'white', fontWeight: 'bold'}}>{info[0]["status"]}</Text>
             </View>
             <Text style={styles.pedidoText}>{"Pedido: " + info[0]["pedido"]}</Text>
             <Text style={styles.pedidoText}>{"Preço: " + info[0]["precoTotal"]}</Text>
-            <Text style={styles.pedidoText}>{"Endereço: " + info[0]["precoTotal"]}</Text>
           </View>
-        
-  
+          {info[0]["status"] === "Concluído" &&
+                <TouchableOpacity style={styles.confirmButton}>
+                  <Text style={{color: 'white', fontWeight: 'bold'}}>Confirmar entrega</Text>
+                </TouchableOpacity>
+          }
+          
         
   
         <Modal visible={modalVisible} animationType="fade" transparent>
@@ -200,9 +214,9 @@ const Pedido = ({ info, type }) => {
 
       <View style={styles.pedido}>
           <View style={styles.secao1}>
-            <View style={[styles.pedidoStatus, statusColor]}>
+            <TouchableOpacity style={[styles.pedidoStatus, statusColor]} onPress={handleClick}>
               <Text style={{color: 'white', fontWeight: 'bold'}}>{info[1]["status"]}</Text>
-            </View>
+            </TouchableOpacity>
             <Text style={styles.pedidoText}>{"Pedido: " + info[1]["pedido"]}</Text>
             <Text style={styles.pedidoText}>{"Preço: " + info[1]["precoTotal"]}</Text>
             <Text style={styles.pedidoText}>{"Endereço: " + info[1]["precoTotal"]}</Text>
@@ -212,7 +226,7 @@ const Pedido = ({ info, type }) => {
           <TouchableOpacity style={styles.acceptButton} onPress={() => acceptPedido()}>
             <Text style={{color: "white", fontWeight: 'bold',}}>Aceitar pedido</Text>
           </TouchableOpacity>
-          }
+          } 
           {info[1]["status"] !== "Aguardando entregador" &&
           <TouchableOpacity style={styles.acceptButton} onPress={() =>{
             const auxPorra = info
@@ -229,21 +243,6 @@ const Pedido = ({ info, type }) => {
 
         <Modal visible={modalVisible} animationType="fade" transparent>
           <View style={styles.modalContainer}>
-            {type === "restaurante" &&
-              <FlatList
-              contentContainerStyle={styles.flatList}
-              data={statusRestaurante}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.statusOption}
-                  onPress={() => handleStatusSelect(item)}
-                >
-                  <Text>{item}</Text>
-                </TouchableOpacity>
-              )}
-            />}
-            {type === "entregador" &&
               <FlatList
             
               contentContainerStyle={styles.flatList}
@@ -257,7 +256,7 @@ const Pedido = ({ info, type }) => {
                   <Text style={{fontWeight: 'bold', fontSize: 30}}>{item}</Text>
                 </TouchableOpacity>
               )}
-            />}
+              ></FlatList>
            
           </View>
               </Modal>
@@ -327,6 +326,11 @@ const styles = StyleSheet.create({
   },
   acceptButton:{
     backgroundColor: "green",
+    padding: 10,
+    borderRadius: 15,
+  },
+  confirmButton: {
+    backgroundColor: "orange",
     padding: 10,
     borderRadius: 15,
   }

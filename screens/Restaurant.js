@@ -3,15 +3,41 @@ import BottomTabNav from '../components/BottomTabNav';
 import { useNavigation } from '@react-navigation/native';
 import OptionCard from '../components/OptionCard';
 import { TouchableOpacity } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getFirestore, collection, addDoc, getDocs, getDoc, query, doc } from 'firebase/firestore';
+import app from '../config/firebase';
 
 export default function Restaurant(props) {
 
   const restaurantData = props.route.params
-  console.log("RESTAURANT SCREEN: ", restaurantData);
-  
+  const db = getFirestore(app);
   const navigation = useNavigation();
 
+  //console.log("RESTAURANT SCREEN: ", restaurantData);
+
+  
+  const [pratos, setPratos] = useState([])
+
+
+  const getRestaurantMenu = async () => {
+    //console.log("ID rest:", restaurantData["id"])
+
+    try{
+      const q = query(collection(db, 'restaurantes', restaurantData["id"], 'pratos'))
+      const querySnapshot = await getDocs(q);
+      const dishes = [];
+      querySnapshot.forEach((doc) => {
+        dishes.push(doc.data());
+      });
+
+      //console.log(dishes)
+      setPratos(dishes)
+    }
+    catch (error) {
+      console.error("Error fetching restaurant menu:", error);
+    }
+    
+  }
 
 
   const opcoes = [
@@ -19,7 +45,7 @@ export default function Restaurant(props) {
     ["Pizza", 42.90], 
     ["Espetinho", 11,50],
     ["Churros", 12.90],
-    ["Sonho", 5.90]
+    ["Sonho", 5.90] 
   ]
 
   const [opcoesEscolhidas, setOpcoesEscolhidos] = useState([])
@@ -32,6 +58,9 @@ export default function Restaurant(props) {
     setOpcoesEscolhidos([...opcoesEscolhidas, novaOpcaoEscolhida])
   }
 
+  useEffect(() => {
+    getRestaurantMenu()
+  }, [])
 
 
   return(
@@ -53,8 +82,14 @@ export default function Restaurant(props) {
         <Text style={{fontSize: 25, marginBottom: 25, marginTop: 25}}>Cardápio</Text>
         
         
-          {opcoes.length != 0 &&
-            opcoes.map((opcao, i) => <OptionCard key={i} name={opcao[0]} price={opcao[1]} addOpcao={addOpcao}/>)
+          {pratos.length != 0 &&
+            pratos.map((prato, i) => <OptionCard 
+            key={i} 
+            name={prato["nome"]} 
+            price={prato["preco"]} 
+            descricao={prato["descricao"]} 
+            img={prato["imagePlateUrl"]}
+            addOpcao={addOpcao}/>)
           }
           
         

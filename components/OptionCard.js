@@ -1,22 +1,16 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
-export default function OptionCard ({name, price, addOpcao}) {
-
-    const navigation = useNavigation();
-
-    const handleAddButton = () => {
-        console.log('ok')
-        navigation.navigate('Carrinho')
-    };
-    
+export default function OptionCard ({name, price, descricao, img, addOpcao}) {
 
     return(
         <TouchableOpacity style={styles.card}>
-            <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png'}} style={{ width: 70, height: 70}}/>
+            <Image source={{ uri: img}} style={{ width: 70, height: 70, marginLeft: 15, marginRight: 15}}/>
             <View style={styles.itemInfo}>
                 <Text style={{ marginBottom: 10, fontWeight: 'bold'}}>
                     {name}
+                </Text>
+                <Text style={{width: '70%', maxWidth: '70%',}}>
+                    {descricao}
                 </Text>
                 <Text>
                     {price}
@@ -56,6 +50,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         borderColor: 'black',
         borderWidth: 1,
+        marginRight: 15
     },
     itemInfo: {
         flexDirection: 'column',

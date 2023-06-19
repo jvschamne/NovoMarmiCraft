@@ -14,10 +14,10 @@ export default function Carrinho(props) {
     const restaurantData = data[0]
     const [pedidos, setPedidos] = useState(data[1])
     const [preco, setPreco] = useState(0)
-
+    const navigation = useNavigation();
     const [location, setLocation] = useState(null)
 
-    console.log("RESTAURANTE DATA CARRINHO: ", restaurantData)
+    //console.log("RESTAURANTE DATA CARRINHO: ", restaurantData)
     const [uId, setUId] = useContext(Context).id;
     const db = getFirestore(app);
     
@@ -26,7 +26,7 @@ export default function Carrinho(props) {
 
     const getCardData = async () => {
         const dadosBancariosRef = collection(db, 'clientes', uId, 'dadosBancarios');
-        console.log(dadosBancariosRef)
+        //console.log(dadosBancariosRef)
         const querySnapshot = await getDocs(dadosBancariosRef);
 
         if (!querySnapshot.empty) {
@@ -34,7 +34,7 @@ export default function Carrinho(props) {
             
                 const numeroCartao = doc.data().numeroCartao;
                 numCard = "**** **** **** " + numeroCartao.substring(numeroCartao.length - 4);
-                console.log(numCard);
+                //console.log(numCard);
                 
                 setMetodosPagamento(numCard)
             })
@@ -45,7 +45,7 @@ export default function Carrinho(props) {
         try {
           const { status } = await Location.requestForegroundPermissionsAsync();
           if (status !== 'granted') {
-            console.log('Permissão de localização negada');
+            //console.log('Permissão de localização negada');
             return;
           } 
       
@@ -59,25 +59,28 @@ export default function Carrinho(props) {
           console.log('Erro ao obter a localização:', error);
         }
       };
-    
+   
     const handleBuyButton = async () => {
 
+        console.log("oi")
         getLocation()
+        console.log("o2")
 
         let nomesPedidos = []
         let precoPedidos = 0
         //tratando Pedidos
         pedidos.forEach(elem => {
-            console.log(elem)
+            //console.log(elem)
             nomesPedidos.push(elem[0])
-            precoPedidos += elem[1]
+            let precoFloat = parseFloat(elem[1].replace(",", "."));
+            precoPedidos += precoFloat
         })
+        console.log("oi3")
 
 
         precoPedidos = precoPedidos.toFixed(2);
-
-        console.log(nomesPedidos)
-        console.log(precoPedidos)
+        console.log("oi4")
+        
 
         const dadosPedidos = pedidos
 
@@ -109,46 +112,49 @@ export default function Carrinho(props) {
       };
       
 
-    const navigation = useNavigation();
+    const removeOpcao = (idPedido) => {
+        //console.log("Remove opcao", idPedido)
+        // Crie uma nova lista de pedidos excluindo o pedido com a chave correspondente
+        console.log(pedidos[idPedido])
 
+        const removePedido = pedidos[idPedido]
 
-    const removeOpcao = (nomeOpcao, precoOpcao) => {
-        console.log("Remove opcao", nomeOpcao, precoOpcao)
-        // Crie uma nova lista de pedidos excluindo a opção removida
-        const novosPedidos = pedidos.filter(opcao => opcao[0] !== nomeOpcao && opcao[1] !== precoOpcao);
+        const novosPedidos = pedidos.filter(item => item !== removePedido);
 
+        setPedidos(novosPedidos)
         // Atualize o estado "pedidos" com a nova lista de pedidos
-        setPedidos(novosPedidos);
-    }
-
-    
+    }  
 
     useEffect(() => {
         getCardData()
         
-
         let auxPreco = 0
         //tratando Pedidos
         pedidos.forEach(elem => {
-            console.log(elem)
-            auxPreco += elem[1]
+            //console.log(elem)
+            const precoFloat = parseFloat(elem[1].replace(",", "."));
+            auxPreco += precoFloat
         })
 
-
-        auxPreco = auxPreco.toFixed(2);
+        try{
+            auxPreco = auxPreco.toFixed(2);
+        }
+        catch(error){
+            console.log("ERRO:", error)
+        }
         setPreco(auxPreco)
 
     }, [pedidos])
-
+   
     return(
-        <View style={styles.container}>
+        <View style={styles.container}> 
             <ScrollView contentContainerStyle={styles.scrollViewContent}style={styles.container}>
                 <Text style={styles.title}>Seu pedido</Text> 
     
                 <ScrollView contentContainerStyle={styles.scrollViewContent} style={{
                     marginBottom: 400, marginTop: 20}}>
                         {pedidos.length != 0 &&
-                            pedidos.map((opcao, i) => <PedidoCliente key={i} name={opcao[0]} price={opcao[1]} funcaoRemove={removeOpcao}/>)
+                            pedidos.map((opcao, i) => <PedidoCliente key={i} id={i} name={opcao[0]} price={opcao[1]} funcaoRemove={removeOpcao}/>)
                         }
                 </ScrollView>
                 
@@ -161,7 +167,7 @@ export default function Carrinho(props) {
                         dropdownStyle={styles.dropdown2}
                         data={[metodosPagamento]}
                         onSelect={(selectedItem, index) => {
-                            console.log(selectedItem, index)
+                            //console.log(selectedItem, index)
                         }}
                         buttonTextAfterSelection={(selectedItem, index) => {
                             // text represented after item is selected
@@ -175,12 +181,7 @@ export default function Carrinho(props) {
                         }}
                     />
                     </View>
-
-                    {/*<TouchableOpacity style={styles.checkoutButton} onPress={getLocation}>
-                        <Text style={styles.buttonText}>Pegar localização</Text>
-                    </TouchableOpacity>*/}
-
-                    
+                
           <Text style={styles.total}>Total a pagar: R${preco}</Text>
           <TouchableOpacity style={styles.checkoutButton} onPress={handleBuyButton}>
             <Text style={styles.buttonText}>Finalizar pedido</Text>
@@ -188,7 +189,7 @@ export default function Carrinho(props) {
                 </View>
                 
             </ScrollView>
-            <BottomTabNav></BottomTabNav>
+                <BottomTabNav></BottomTabNav>
         </View>
         
     )
