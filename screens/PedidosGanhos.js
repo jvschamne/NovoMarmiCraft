@@ -36,7 +36,7 @@ export default function PedidosGanhos(props) {
             querySnapshot.forEach((doc) => {
                 console.log('ID do pedido:', doc.id);
                 console.log('Dados do pedido:', doc.data());
-                auxPedidos.push([doc.data()])
+                auxPedidos.push([doc.id, doc.data()])
             });
         } catch (error) {
             console.error('Erro ao encontrar os pedidos:', error);
@@ -50,7 +50,7 @@ export default function PedidosGanhos(props) {
     }
 
     useEffect(() => {
-        getPedidos()
+      if(userType === "clientes") getPedidos()
     }, [])
 
 

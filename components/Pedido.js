@@ -15,15 +15,11 @@ const Pedido = ({ info, type }) => {
   const statusRestaurante = ['Aguardando entregador', 'Preparando', 'Entregando', 'Concluído'];
   const statusEntregador = ['Entregando', 'Concluído']
   
-  console.log("INFO:", info)
-  console.log("Status:", status)
+  //console.log("INFO:", info)
+  //console.log("Status:", status)
   useEffect(() => {
-    if (type !== "clientes") {
       setStatus(info[1]["status"]);
-    } else {
-      console.log(setStatus)
-      setStatus(info[0]["status"]);
-    }
+  
   }, [info]);
 
   const handleClick = () => {
@@ -35,10 +31,10 @@ const Pedido = ({ info, type }) => {
     setModalVisible(false);
 
     try {
-      console.log("pedidoId:", info[0])
-      console.log("ETAPA 1")
+      //console.log("pedidoId:", info[0])
+      //console.log("ETAPA 1")
       const pedidoRef = doc(db, 'pedidos', info[0]);
-      console.log("ETAPA 2")
+      //console.log("ETAPA 2")
       const pedidoSnapshot = await getDoc(pedidoRef);
   
       if (pedidoSnapshot.exists()) {
@@ -85,6 +81,35 @@ const Pedido = ({ info, type }) => {
     info[1]["status"] = "Entregando"
     setStatus("Entregando")
   }
+
+  const confirmarEntrega = async () => {
+    setStatus("Entrega confirmada");
+ 
+    try {
+      console.log("pedidoId:", info[0])
+      console.log("ETAPA 1")
+      const pedidoRef = doc(db, 'pedidos', info[0]);
+      console.log("ETAPA 2")
+      const pedidoSnapshot = await getDoc(pedidoRef);
+  
+      if (pedidoSnapshot.exists()) {
+        await updateDoc(pedidoRef, { status: "Entrega confirmada" });
+        console.log('Status do pedido atualizado com sucesso.');
+
+        // Update the status in the info array
+        if (type !== 'clientes') {
+          info[1]['status'] = "Entrega confirmada";
+        } else {
+          info[0]['status'] = "Entrega confirmada";
+        }
+      } else {
+        console.log('O pedido não existe.');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar o status do pedido:', error);
+    }
+  };
+  
 
   
   useEffect(() => {
@@ -158,13 +183,13 @@ const Pedido = ({ info, type }) => {
             
             
             <View style={[styles.pedidoStatus, statusColor]}>
-              <Text style={{color: 'white', fontWeight: 'bold'}}>{info[0]["status"]}</Text>
+              <Text style={{color: 'white', fontWeight: 'bold'}}>{info[1]["status"]}</Text>
             </View>
-            <Text style={styles.pedidoText}>{"Pedido: " + info[0]["pedido"]}</Text>
-            <Text style={styles.pedidoText}>{"Preço: " + info[0]["precoTotal"]}</Text>
+            <Text style={styles.pedidoText}>{"Pedido: " + info[1]["pedido"]}</Text>
+            <Text style={styles.pedidoText}>{"Preço: " + info[1]["precoTotal"]}</Text>
           </View>
-          {info[0]["status"] === "Concluído" &&
-                <TouchableOpacity style={styles.confirmButton}>
+          {info[1]["status"] === "Concluído" &&
+                <TouchableOpacity style={styles.confirmButton} onPress={() => confirmarEntrega()}>
                   <Text style={{color: 'white', fontWeight: 'bold'}}>Confirmar entrega</Text>
                 </TouchableOpacity>
           }
@@ -330,12 +355,11 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   confirmButton: {
+    marginTop: 20,
     backgroundColor: "orange",
     padding: 10,
     borderRadius: 15,
   }
-
-
 });
 
 export default Pedido;
