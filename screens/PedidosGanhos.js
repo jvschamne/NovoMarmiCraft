@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Modal } from 'react-native';
 import BottomTabNav from '../components/BottomTabNav';
 import { getFirestore, collection, doc, setDoc, getDoc, query, getDocs, where } from 'firebase/firestore';
 import app from '../config/firebase';
