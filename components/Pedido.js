@@ -17,7 +17,7 @@ const Pedido = ({ info, type }) => {
 
   const [showTipModal, setShowTipModal] = useState(false);
   const [tipAmount, setTipAmount] = useState(""); // Estado para armazenar a quantidade de gorjeta
-  
+  const [avaliacao, setAvaliacao] = useState("");
   //console.log("INFO:", info)
   //console.log("Status:", status)
   useEffect(() => { 
@@ -123,7 +123,7 @@ const Pedido = ({ info, type }) => {
         const saldoAtual = entregadorData.saldo || 0;
         const novoSaldo = parseFloat(saldoAtual) + parseFloat(tipAmount);
   
-        await updateDoc(entregadorRef, { saldo: novoSaldo });
+        await updateDoc(entregadorRef, { saldo: novoSaldo, avaliacao: avaliacao });
   
         console.log('Gorjeta dada com sucesso.');
       } else {
@@ -210,10 +210,17 @@ const Pedido = ({ info, type }) => {
                 <Text style={styles.tipModalTitle}>Deseja dar uma gorjeta para o entregador?</Text>
                 <TextInput
                   style={styles.tipInput}
-                  placeholder="Digite o valor da gorjeta"
+                  placeholder="De 0 a 5, avalie o entregador"
                   keyboardType="numeric"
                   value={tipAmount}
                   onChangeText={setTipAmount}
+                />
+                <TextInput
+                  style={styles.tipInput}
+                  placeholder="Digite o valor da gorjeta"
+                  keyboardType="numeric"
+                  value={avaliacao}
+                  onChangeText={setAvaliacao}
                 />
                 <TouchableOpacity
                   style={styles.tipButton}
