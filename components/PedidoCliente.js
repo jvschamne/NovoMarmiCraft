@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-export default function PedidoCliente ({id, name, price, funcaoRemove}) {
+export default function PedidoCliente ({id, name, price, img, funcaoRemove}) {
 
     console.log(id)
 
     return(
         <TouchableOpacity style={styles.card}>
-            <Image source={{ uri: 'https://jvschamne.github.io/marmicraft/marmita.png'}} style={{ width: 70, height: 70}}/>
+            <Image source={{ uri: img }} style={{ width: 70, height: 70}}/>
             <View style={styles.itemInfo}>
                 <Text style={{ marginBottom: 10}}>
                     {name}
@@ -16,7 +16,7 @@ export default function PedidoCliente ({id, name, price, funcaoRemove}) {
                     {price}
                 </Text>
             </View>
-            <TouchableOpacity style={styles.removeButton} onPress={() => funcaoRemove(id/*name, price*/)}>
+            <TouchableOpacity style={styles.removeButton} onPress={() => funcaoRemove(id)}>
                 <Text style={{fontWeight: 'bold', fontSize: 20}}>
                    -
                 </Text>

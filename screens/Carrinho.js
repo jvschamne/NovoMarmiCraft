@@ -13,6 +13,7 @@ export default function Carrinho(props) {
     const data = props.route.params
     const restaurantData = data[0]
     const [pedidos, setPedidos] = useState(data[1])
+    console.log("Dados:", data[1])
     const [preco, setPreco] = useState(0)
     const navigation = useNavigation();
     const [location, setLocation] = useState(null)
@@ -21,7 +22,8 @@ export default function Carrinho(props) {
     const [uId, setUId] = useContext(Context).id;
     const db = getFirestore(app);
     
-    
+    console.log("DADOS CARRINHO:", data[0])
+
     const [metodosPagamento, setMetodosPagamento] = useState("")
 
     const getCardData = async () => {
@@ -154,7 +156,7 @@ export default function Carrinho(props) {
                 <ScrollView contentContainerStyle={styles.scrollViewContent} style={{
                     marginBottom: 400, marginTop: 20}}>
                         {pedidos.length != 0 &&
-                            pedidos.map((opcao, i) => <PedidoCliente key={i} id={i} name={opcao[0]} price={opcao[1]} funcaoRemove={removeOpcao}/>)
+                            pedidos.map((opcao, i) => <PedidoCliente key={i} id={i} name={opcao[0]} price={opcao[1]} img={opcao[2]} funcaoRemove={removeOpcao}/>)
                         }
                 </ScrollView>
                 

@@ -17,7 +17,7 @@ export default function OptionCard ({name, price, descricao, img, addOpcao}) {
                 </Text>
             </View>
             
-            <TouchableOpacity style={styles.addButton} onPress={() => addOpcao(name, price)}>
+            <TouchableOpacity style={styles.addButton} onPress={() => addOpcao(name, price, img)}>
                 <Text style={{fontWeight: 'bold', fontSize: 20}}>
                    +
                 </Text>

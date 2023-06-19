@@ -51,10 +51,10 @@ export default function Restaurant(props) {
   const [opcoesEscolhidas, setOpcoesEscolhidos] = useState([])
 
 
-  const addOpcao = (nomeEscolhido, precoEscolhido) => {
+  const addOpcao = (nomeEscolhido, precoEscolhido, imagemEscolhido) => {
     console.log(nomeEscolhido, precoEscolhido)
 
-    const novaOpcaoEscolhida = [nomeEscolhido, precoEscolhido]
+    const novaOpcaoEscolhida = [nomeEscolhido, precoEscolhido, imagemEscolhido]
     setOpcoesEscolhidos([...opcoesEscolhidas, novaOpcaoEscolhida])
   }
 
