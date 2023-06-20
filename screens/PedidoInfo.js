@@ -65,8 +65,11 @@ export default function PedidoInfo(props) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Informações do Pedido:</Text>
-      <View>
-        <Text style={styles.pedidoText}>{info[1]['pedido']}</Text>
+      <View style={styles.orderView}>
+        {info[1]['pedido'].map(
+          (elem, i) => <Text key={i} style={styles.pedidoText}>- {elem}</Text>)
+        }
+        
       </View>
 
       {location && (
@@ -101,7 +104,12 @@ const styles = StyleSheet.create({
     width: '80%',
     height: '60%',
   },
+  orderView: {
+    width: '100%',
+    left: 50,
+    marginBottom: 10,
+  },
   pedidoText: {
-    margin: 10,
+    margin: 5,
   },
 });
