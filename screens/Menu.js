@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   },
   restaurantes: {
     marginBottom: 100,
-    width: '85%',
+    width: '95%',
   },
   scrollEntregador: {
     backgroundColor: '#fcc40d',

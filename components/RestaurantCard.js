@@ -32,7 +32,8 @@ export default function RestaurantCard ({data}) {
 const styles = StyleSheet.create({
     image: {
         width: 70, 
-        height: 70
+        height: 70,
+        borderRadius: 15
     },
     card: {
         flexDirection: 'row',

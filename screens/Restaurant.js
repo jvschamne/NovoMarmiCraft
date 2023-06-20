@@ -68,7 +68,7 @@ export default function Restaurant(props) {
       <ScrollView contentContainerStyle={styles.scrollViewContent} style={{marginBottom: 100}}>
         <View style={styles.container2}>
           <Image source={{ uri: restaurantData["imageDownloadUrl"] }} style={styles.logo}></Image>
-          <View>
+          <View style={styles.info}>
             <Text style={styles.restaurantName}>{restaurantData["nome"]}</Text>
             <Text style={styles.address}>{restaurantData["bairro"]}, {restaurantData["rua"]}, {restaurantData["numero"]}</Text>
             <Text style={{fontSize: 15, marginTop: 15}}>1,5Km - Aberto</Text>
@@ -107,31 +107,32 @@ export default function Restaurant(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-   
     backgroundColor: '#f9f1f7',
   },
   container2: {
     width: '100%',
-    padding: 20,
+    padding: 15,
     backgroundColor: '#fcc40d',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+
   },
   restaurantName: {
     marginTop: 20,
     fontSize: 20,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    
   },
   address: {
     fontSize: 20, 
-    marginTop: 10
+    marginTop: 10,
+    width: '70%'
   },
   logo: {
     marginRight: 20,
-    marginTop: 60,
-    width: 150,
-    height: 150,
+    width: 100,
+    height: 100,
   },
   scrollViewContent: {
     flexGrow: 1,
@@ -153,5 +154,8 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  info:{
+    width: '60%'
   }
 })
