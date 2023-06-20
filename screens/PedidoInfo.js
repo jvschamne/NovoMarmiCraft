@@ -7,7 +7,7 @@ export default function PedidoInfo(props) {
   const info = props.route.params;
   console.log("INFO:", info);
 
-  const [location, setLocation] = useState([0, 0]);
+  const [location, setLocation] = useState(null);
   const [isLocationObtained, setLocationObtained] = useState(false);
 
   useEffect(() => {
@@ -32,16 +32,19 @@ export default function PedidoInfo(props) {
     getLocation();
   }, []);
 
+  const defaultLatitude =  -15.799830;
+  const defaultLongitude = -47.864452;
+
   const initialRegion = {
-    latitude: isLocationObtained ? location[0] : 0,
-    longitude: isLocationObtained ? location[1] : 0,
+    latitude: location ? location[0] : defaultLatitude,
+    longitude: location ? location[1] : defaultLongitude,
     latitudeDelta: 0.01,
     longitudeDelta: 0.01,
   };
 
   const initialMarkerCoordinate = {
-    latitude: isLocationObtained ? location[0] : 0,
-    longitude: isLocationObtained ? location[1] : 0,
+    latitude: location ? location[0] : defaultLatitude,
+    longitude: location ? location[1] : defaultLongitude,
   };
 
   let finalMarkerCoordinate = null;
@@ -52,8 +55,8 @@ export default function PedidoInfo(props) {
     };
   } else {
     finalMarkerCoordinate = {
-      latitude: -25.438748,
-      longitude: -49.26237,
+      latitude: defaultLatitude,
+      longitude: defaultLongitude,
     };
   }
 
@@ -66,11 +69,16 @@ export default function PedidoInfo(props) {
         <Text style={styles.pedidoText}>{info[1]['pedido']}</Text>
       </View>
 
-      <MapView style={styles.map} initialRegion={initialRegion}>
-        {isLocationObtained && <Marker coordinate={initialMarkerCoordinate} />}
-        <Marker coordinate={finalMarkerCoordinate} />
-        <Polyline coordinates={polylineCoordinates} strokeWidth={2} strokeColor="red" />
-      </MapView>
+      {location && (
+        <MapView style={styles.map} initialRegion={initialRegion}>
+          <Marker coordinate={initialMarkerCoordinate} />
+          <Marker coordinate={finalMarkerCoordinate} />
+          <Polyline coordinates={polylineCoordinates} strokeWidth={2} strokeColor="red" />
+        </MapView>
+      )}
+      {!location && (
+        <Text style={{fontSize: 25, marginTop: 40}}>Carregando mapa</Text>
+      )}
     </View>
   );
 }
