@@ -14,6 +14,7 @@ export default function Carrinho(props) {
     const restaurantData = data[0]
     const [pedidos, setPedidos] = useState(data[1])
     console.log("Dados:", data[1])
+    console.log("restaurantData:", restaurantData)
     const [preco, setPreco] = useState(0)
     const navigation = useNavigation();
     const [location, setLocation] = useState(null)
@@ -45,13 +46,15 @@ export default function Carrinho(props) {
 
     const getLocation = async () => {
         try {
+            
           const { status } = await Location.requestForegroundPermissionsAsync();
           if (status !== 'granted') {
             //console.log('Permissão de localização negada');
             return;
           } 
       
-          const location = await Location.getCurrentPositionAsync({});
+          const isAndroid = Platform.OS == 'android';
+          const location = await Location.getCurrentPositionAsync({ accuracy: isAndroid ? Location.Accuracy.Low : Location.Accuracy.Lowest, })
           const { latitude, longitude } = location.coords;
           console.log('Latitude:', latitude);
           console.log('Longitude:', longitude);
@@ -65,7 +68,6 @@ export default function Carrinho(props) {
     const handleBuyButton = async () => {
 
         console.log("oi")
-        getLocation()
         console.log("o2")
 
         let nomesPedidos = []
@@ -87,8 +89,8 @@ export default function Carrinho(props) {
         const dadosPedidos = pedidos
 
         try {
-          // Crie um novo documento de pedido na coleção "pedidos"
-          const novoPedidoRef = await addDoc(collection(db, 'pedidos'), {
+        // Crie um novo documento de pedido na coleção "pedidos"
+        const novoPedidoRef = await addDoc(collection(db, 'pedidos'), {
             pedido: nomesPedidos,
             precoTotal: precoPedidos,
             clienteId: uId,
@@ -97,20 +99,22 @@ export default function Carrinho(props) {
             entregadorId: "",
             latitude: location[0],
             longitude: location[1],
-          });
-          
-          // Obtenha o ID do novo pedido
-          const novoPedidoId = novoPedidoRef.id;
-      
-          console.log('Novo pedido criado:', novoPedidoId);
-      
-         
-          
-          //redireciona
-          navigation.navigate('Perfil');
+        });
+        
+        // Obtenha o ID do novo pedido
+        const novoPedidoId = novoPedidoRef.id;
+    
+        console.log('Novo pedido criado:', novoPedidoId);
+    
+        
+        
+        //redireciona
+        navigation.navigate('Perfil');
         } catch (error) {
-          console.error('Erro ao criar um novo pedido:', error);
+        console.error('Erro ao criar um novo pedido:', error);
         }
+            
+        
       };
       
 
@@ -147,6 +151,10 @@ export default function Carrinho(props) {
         setPreco(auxPreco)
 
     }, [pedidos])
+
+    useEffect(() => {
+        getLocation()
+    }, [])
    
     return(
         <View style={styles.container}> 

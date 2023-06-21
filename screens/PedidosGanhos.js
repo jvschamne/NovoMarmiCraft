@@ -55,7 +55,7 @@ export default function PedidosGanhos(props) {
       
         const intervalID = setInterval(() =>  {
           getPedidos();
-        }, 3000);
+        }, 1500);
     
         return () => clearInterval(intervalID);
       }
