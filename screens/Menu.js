@@ -170,14 +170,31 @@ export default function Menu() {
   };
   
 
-  useEffect(() => {
-    getUserType();
-    getPedidosRestaurante();
-    //console.log('pedidosRestaurante:', pedidosRestaurante);
-  }, []);
+
   
   useEffect(() => {
-    getPedidosEntregador()
+    getUserType();
+
+    if(userType === "entregadores"){
+      getPedidosEntregador()
+
+      const intervalID = setInterval(() =>  {
+          getPedidosEntregador()
+      }, 3000);
+  
+      return () => clearInterval(intervalID);
+    }
+    else if(userType === "restaurantes"){
+      getPedidosRestaurante()
+
+      const intervalID = setInterval(() =>  {
+          getPedidosRestaurante()
+      }, 3000);
+  
+      return () => clearInterval(intervalID);
+    }
+    
+    //getPedidosEntregador()
     //console.log('pedidosEntregador:', pedidosEntregador);
   }, []);
   

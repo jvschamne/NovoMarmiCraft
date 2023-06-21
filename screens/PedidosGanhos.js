@@ -50,7 +50,15 @@ export default function PedidosGanhos(props) {
     }
 
     useEffect(() => {
-      if(userType === "clientes") getPedidos()
+      if(userType === "clientes"){ 
+        getPedidos();
+      
+        const intervalID = setInterval(() =>  {
+          getPedidos();
+        }, 3000);
+    
+        return () => clearInterval(intervalID);
+      }
     }, [])
 
 
